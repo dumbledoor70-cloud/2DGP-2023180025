@@ -11,9 +11,14 @@ radius = 200
 
 def move_circle():
     print("CIRCLE")
+    deg = 0
+    rad = math.radians(deg)
+    x = cx + radius * math.cos(rad)
+    y = cy + radius * math.sin(rad)
     clear_canvas()
-    character.draw(400, 300)
+    character.draw(x, y)
     update_canvas()
+    delay(0.5)
     pass
 def move_rectangle():
     print("RECTANGLE")
