@@ -37,6 +37,8 @@ def move_triangle():
     print("TRIANGLE")
     pass
 
+rect_bottom_side()
+
 while True:
     move_circle()
     move_rectangle()
