@@ -9,18 +9,20 @@ character = load_image('character.png')
 cx, cy = 400, 300
 radius = 200
 
+def render_character(x, y):
+    clear_canvas()
+    character.draw(x, y)
+    update_canvas()
+    delay(0.01)
+
 def move_circle():
     print("CIRCLE")
     for deg in range(0, 360, 5):
         rad = math.radians(deg)
         x = cx + radius * math.cos(rad)
         y = cy + radius * math.sin(rad)
+        render_character(x, y)
 
-        clear_canvas()
-        character.draw(x, y)
-        update_canvas()
-        delay(0.01)
-    
 def move_rectangle():
     print("RECTANGLE")
     pass
