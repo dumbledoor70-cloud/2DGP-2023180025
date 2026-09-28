@@ -26,6 +26,10 @@ def move_circle():
         y = cy + radius * math.sin(rad)
         render_character(x, y)
 
+def rect_bottom_side():
+    for x in range(rect_left, rect_right + 1, 10):
+        render_character(x, rect_bottom)
+
 def move_rectangle():
     print("RECTANGLE")
     pass
