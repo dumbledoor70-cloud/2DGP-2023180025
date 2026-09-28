@@ -9,6 +9,9 @@ character = load_image('character.png')
 cx, cy = 400, 300
 radius = 200
 
+rect_bottom, rect_top = 100, 500
+rect_left, rect_right = 100, 700
+
 def render_character(x, y):
     clear_canvas()
     character.draw(x, y)
