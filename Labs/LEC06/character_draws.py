@@ -12,6 +12,10 @@ radius = 200
 rect_bottom, rect_top = 100, 500
 rect_left, rect_right = 100, 700
 
+tri_p1 = (100, 100)
+tri_p2 = (700, 100)
+tri_p3 = (400, 500)
+
 def render_character(x, y):
     clear_canvas()
     character.draw(x, y)
@@ -48,11 +52,6 @@ def move_rectangle():
 def move_triangle():
     print("TRIANGLE")
     pass
-
-rect_bottom_side()
-rect_right_side()
-rect_top_side()
-rect_left_side()
 
 while True:
     move_circle()
