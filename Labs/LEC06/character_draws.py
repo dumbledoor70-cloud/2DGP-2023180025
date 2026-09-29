@@ -63,6 +63,7 @@ def move_triangle():
     pass
 
 move_along_line(tri_p1, tri_p2)
+move_along_line(tri_p2, tri_p3)
 
 while True:
     move_circle()
