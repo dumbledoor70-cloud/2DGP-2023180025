@@ -11,6 +11,7 @@ radius = 200
 
 FRAME_DELAY = 0.01
 CIIRCLE_STEPS = 2
+LINE_STEPS = 60
 
 rect_p1 = (100, 100)
 rect_p2 = (700, 100)
@@ -27,7 +28,7 @@ def render_character(x, y):
     update_canvas()
     delay(FRAME_DELAY)
 
-def move_along_line(p1, p2, steps=50):
+def move_along_line(p1, p2, steps=LINE_STEPS):
     x1, y1 = p1
     x2, y2 = p2
     for i in range(steps + 1):
