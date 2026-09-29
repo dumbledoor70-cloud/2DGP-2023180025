@@ -9,8 +9,10 @@ character = load_image('character.png')
 cx, cy = 400, 300
 radius = 200
 
-rect_bottom, rect_top = 100, 500
-rect_left, rect_right = 100, 700
+rect_p1 = (100, 100)
+rect_p2 = (700, 100)
+rect_p3 = (700, 500)
+rect_p4 = (100, 500)
 
 tri_p1 = (100, 100)
 tri_p2 = (700, 100)
@@ -39,25 +41,13 @@ def move_circle():
         y = cy + radius * math.sin(rad)
         render_character(x, y)
 
-def rect_bottom_side():
-    for x in range(rect_left, rect_right + 1, 10):
-        render_character(x, rect_bottom)
-
-def rect_right_side():
-    for y in range(rect_bottom, rect_top + 1, 10):
-        render_character(rect_right, y)
-
-def rect_top_side():
-    for x in range(rect_right, rect_left - 1, -10):
-        render_character(x, rect_top)
-
-def rect_left_side():
-    for y in range(rect_top, rect_bottom - 1, -10):
-        render_character(rect_left, y)
-
 def move_rectangle():
     print("RECTANGLE")
-    pass
+    move_along_line(rect_p1, rect_p2)
+    move_along_line(rect_p2, rect_p3)
+    move_along_line(rect_p3, rect_p4)
+    move_along_line(rect_p4, rect_p1)
+    
 def move_triangle():
     print("TRIANGLE")
     move_along_line(tri_p1, tri_p2)
