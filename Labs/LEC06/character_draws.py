@@ -22,6 +22,15 @@ def render_character(x, y):
     update_canvas()
     delay(0.01)
 
+def move_along_line(p1, p2, steps=50):
+    x1, y1 = p1
+    x2, y2 = p2
+    for i in range(steps + 1):
+        t = i / steps
+        x = x1 + (x2 - x1) * t
+        y = y1 + (y2 - y1) * t
+        render_character(x, y)
+
 def move_circle():
     print("CIRCLE")
     for deg in range(0, 360, 5):
