@@ -38,6 +38,10 @@ def rect_top_side():
     for x in range(rect_right, rect_left - 1, -10):
         render_character(x, rect_top)
 
+def rect_left_side():
+    for y in range(rect_top, rect_bottom - 1, -10):
+        render_character(rect_left, y)
+
 def move_rectangle():
     print("RECTANGLE")
     pass
@@ -48,6 +52,7 @@ def move_triangle():
 rect_bottom_side()
 rect_right_side()
 rect_top_side()
+rect_left_side()
 
 while True:
     move_circle()
