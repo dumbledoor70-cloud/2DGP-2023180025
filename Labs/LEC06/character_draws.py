@@ -26,6 +26,7 @@ def render_character(x, y):
     clear_canvas()
     character.draw(x, y)
     update_canvas()
+    get_events()
     delay(FRAME_DELAY)
 
 def move_along_line(p1, p2, steps=LINE_STEPS):
