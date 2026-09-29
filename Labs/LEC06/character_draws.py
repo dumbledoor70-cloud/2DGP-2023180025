@@ -10,17 +10,11 @@ cx, cy = 400, 300
 radius = 200
 
 FRAME_DELAY = 0.01
-CIIRCLE_STEPS = 2
+CIRCLE_STEPS = 2
 LINE_STEPS = 60
 
-rect_p1 = (100, 100)
-rect_p2 = (700, 100)
-rect_p3 = (700, 500)
-rect_p4 = (100, 500)
-
-tri_p1 = (100, 100)
-tri_p2 = (700, 100)
-tri_p3 = (400, 500)
+rect_points = [(100, 100), (700, 100), (700, 500), (100, 500)]
+tri_points = [(100, 100), (700, 100), (400, 500)]
 
 def render_character(x, y):
     clear_canvas()
@@ -38,9 +32,16 @@ def move_along_line(p1, p2, steps=LINE_STEPS):
         y = y1 + (y2 - y1) * t
         render_character(x, y)
 
+def move_polygon(points):
+    count = len(points)
+    for i in range(count):
+        p1 = points[i]
+        p2 = points[(i + 1) % count]
+        move_along_line(p1, p2)
+
 def move_circle():
     print("CIRCLE")
-    for deg in range(0, 360, CIIRCLE_STEPS):
+    for deg in range(0, 360, CIRCLE_STEPS):
         rad = math.radians(deg)
         x = cx + radius * math.cos(rad)
         y = cy + radius * math.sin(rad)
@@ -48,16 +49,11 @@ def move_circle():
 
 def move_rectangle():
     print("RECTANGLE")
-    move_along_line(rect_p1, rect_p2)
-    move_along_line(rect_p2, rect_p3)
-    move_along_line(rect_p3, rect_p4)
-    move_along_line(rect_p4, rect_p1)
+    move_polygon(rect_points)
     
 def move_triangle():
     print("TRIANGLE")
-    move_along_line(tri_p1, tri_p2)
-    move_along_line(tri_p2, tri_p3)
-    move_along_line(tri_p3, tri_p1)
+    move_polygon(tri_points)
     
 while True:
     move_circle()
