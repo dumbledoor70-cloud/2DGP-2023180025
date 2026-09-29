@@ -9,6 +9,8 @@ character = load_image('character.png')
 cx, cy = 400, 300
 radius = 200
 
+FRAME_DELAY = 0.01
+
 rect_p1 = (100, 100)
 rect_p2 = (700, 100)
 rect_p3 = (700, 500)
@@ -22,7 +24,7 @@ def render_character(x, y):
     clear_canvas()
     character.draw(x, y)
     update_canvas()
-    delay(0.01)
+    delay(FRAME_DELAY)
 
 def move_along_line(p1, p2, steps=50):
     x1, y1 = p1
