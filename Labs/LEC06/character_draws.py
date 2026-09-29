@@ -10,6 +10,7 @@ cx, cy = 400, 300
 radius = 200
 
 FRAME_DELAY = 0.01
+CIIRCLE_STEPS = 2
 
 rect_p1 = (100, 100)
 rect_p2 = (700, 100)
@@ -37,7 +38,7 @@ def move_along_line(p1, p2, steps=50):
 
 def move_circle():
     print("CIRCLE")
-    for deg in range(0, 360, 5):
+    for deg in range(0, 360, CIIRCLE_STEPS):
         rad = math.radians(deg)
         x = cx + radius * math.cos(rad)
         y = cy + radius * math.sin(rad)
