@@ -62,6 +62,8 @@ def move_triangle():
     print("TRIANGLE")
     pass
 
+move_along_line(tri_p1, tri_p2)
+
 while True:
     move_circle()
     move_rectangle()
