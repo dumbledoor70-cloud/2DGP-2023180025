@@ -16,6 +16,7 @@ CENTER_Y = CANVAS_HEIGHT // 2
 MAX_DISPLAY_WIDTH = 420
 MAX_DISPLAY_HEIGHT = 460
 FRAME_INTERVAL_SECONDS = 0.1
+ACTION_REPEAT_COUNT = 5
 
 
 def next_frame_index(frame_index, frame_count):
@@ -66,11 +67,11 @@ def draw_first_action_frame(mario_sheet, frame_index):
     update_canvas()
 
 
-def play_first_action_once(mario_sheet):
+def play_first_action(mario_sheet, repeat_count=1):
     frame_index = 0
     completed_playbacks = 0
     previous_frame_time = monotonic()
-    while completed_playbacks < 1:
+    while completed_playbacks < repeat_count:
         now = monotonic()
         if frame_index and not frame_interval_elapsed(now, previous_frame_time):
             delay(0.005)
@@ -90,7 +91,7 @@ def main():
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     try:
         mario_sheet = load_image(SPRITE_SHEET_PATH)
-        play_first_action_once(mario_sheet)
+        play_first_action(mario_sheet, ACTION_REPEAT_COUNT)
     finally:
         close_canvas()
 
