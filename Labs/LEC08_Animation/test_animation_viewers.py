@@ -13,6 +13,19 @@ class AnimationViewerTests(unittest.TestCase):
             [12, 12, 12, 12, 12],
         )
 
+    def test_trimmed_mario_frames_have_variable_source_sizes(self):
+        self.assertEqual(len(viewer.MARIO_TRIMMED_ANIMATIONS), 5)
+        self.assertEqual(
+            [len(animation) for animation in viewer.MARIO_TRIMMED_ANIMATIONS],
+            [12, 12, 12, 12, 12],
+        )
+        sizes = {
+            (frame[2], frame[3])
+            for animation in viewer.MARIO_TRIMMED_ANIMATIONS
+            for frame in animation
+        }
+        self.assertEqual(len(sizes), 48)
+
     def test_grid_builder_supports_different_frame_counts(self):
         animations = viewer.build_grid_animations(
             120,
