@@ -6,6 +6,20 @@ import animation_viewers as viewer
 
 
 class AnimationViewerTests(unittest.TestCase):
+    def test_grid_builder_supports_different_frame_counts(self):
+        animations = viewer.build_grid_animations(
+            120,
+            80,
+            ((0, 30), (30, 80)),
+            (2, 3),
+        )
+
+        self.assertEqual(len(animations[0]), 2)
+        self.assertEqual(len(animations[1]), 3)
+        self.assertEqual(animations[0][0], (0, 50, 60, 30))
+        self.assertEqual(animations[0][1], (60, 50, 60, 30))
+        self.assertEqual(animations[1][2], (80, 0, 40, 50))
+
     def test_frame_indices_wrap(self):
         self.assertEqual(viewer.next_frame_index(10, 12), 11)
         self.assertEqual(viewer.next_frame_index(11, 12), 0)

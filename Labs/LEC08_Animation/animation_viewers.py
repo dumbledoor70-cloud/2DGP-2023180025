@@ -25,6 +25,20 @@ ACTION_REPEAT_COUNT = 5
 ACTION_PAUSE_SECONDS = 1.0
 PLAYING = "playing"
 PAUSING = "pausing"
+FrameRect = tuple[int, int, int, int]
+AnimationFrames = tuple[FrameRect, ...]
+
+
+def build_grid_animations(sheet_width, sheet_height, action_rows, frame_counts):
+    animations = []
+    for (top, bottom), frame_count in zip(action_rows, frame_counts):
+        frames = []
+        for frame_index in range(frame_count):
+            left = frame_index * sheet_width // frame_count
+            right = (frame_index + 1) * sheet_width // frame_count
+            frames.append((left, sheet_height - bottom, right - left, bottom - top))
+        animations.append(tuple(frames))
+    return tuple(animations)
 
 
 class AnimationState:
