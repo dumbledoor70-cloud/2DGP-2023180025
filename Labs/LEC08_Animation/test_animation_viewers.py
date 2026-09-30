@@ -97,11 +97,27 @@ class AnimationViewerTests(unittest.TestCase):
             for animation in viewer.MARIO_TRIMMED_ANIMATIONS
             for frame in animation
         }
+
         self.assertEqual(len(sizes), 48)
         self.assertEqual(
             viewer.get_frame_rect(3, 7),
             viewer.MARIO_TRIMMED_ANIMATIONS[3][7],
         )
+
+    def test_animation_scale_is_shared_across_different_frame_sizes(self):
+        animations = (
+            ((0, 0, 80, 40), (80, 0, 20, 20)),
+            ((0, 40, 50, 10),),
+        )
+        scale = viewer.calculate_animation_scale(animations)
+        large_size = viewer.calculate_display_size(80, 40, scale)
+        small_size = viewer.calculate_display_size(20, 20, scale)
+
+        self.assertEqual(large_size, (420, 210))
+        self.assertEqual(small_size, (105, 105))
+        self.assertLessEqual(large_size[0], viewer.MAX_DISPLAY_WIDTH)
+        self.assertLessEqual(large_size[1], viewer.MAX_DISPLAY_HEIGHT)
+        self.assertAlmostEqual(large_size[0] / 80, small_size[0] / 20)
 
     def test_animation_validation_accepts_variable_rectangles(self):
         animations = (
@@ -157,7 +173,11 @@ class AnimationViewerTests(unittest.TestCase):
         self.assertEqual(sheet.calls[-1][:4], (22, 8, 10, 30))
         self.assertEqual(
             sheet.calls[-1][-2:],
-            viewer.calculate_display_size(10, 30),
+            viewer.calculate_display_size(
+                10,
+                30,
+                viewer.calculate_animation_scale(animations),
+            ),
         )
 
     def test_main_passes_custom_frame_lists_through_to_renderer(self):

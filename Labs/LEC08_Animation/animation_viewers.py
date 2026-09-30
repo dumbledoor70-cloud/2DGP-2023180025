@@ -141,13 +141,21 @@ def should_quit(events):
     return False
 
 
-def calculate_display_size(frame_width, frame_height):
+def calculate_animation_scale(animations):
+    validate_animations(animations, SHEET_WIDTH, SHEET_HEIGHT)
+    max_width = max(frame[2] for animation in animations for frame in animation)
+    max_height = max(frame[3] for animation in animations for frame in animation)
+    return min(MAX_DISPLAY_WIDTH / max_width, MAX_DISPLAY_HEIGHT / max_height)
+
+
+def calculate_display_size(frame_width, frame_height, scale=None):
     if frame_width <= 0 or frame_height <= 0:
         raise ValueError("Frame dimensions must be positive")
-    scale = min(
-        MAX_DISPLAY_WIDTH / frame_width,
-        MAX_DISPLAY_HEIGHT / frame_height,
-    )
+    if scale is None:
+        scale = min(
+            MAX_DISPLAY_WIDTH / frame_width,
+            MAX_DISPLAY_HEIGHT / frame_height,
+        )
     return round(frame_width * scale), round(frame_height * scale)
 
 
@@ -164,15 +172,19 @@ def draw_action_frame(
     action_index,
     frame_index,
     animations=MARIO_TRIMMED_ANIMATIONS,
+    display_scale=None,
 ):
     frame_left, frame_bottom, frame_width, frame_height = get_frame_rect(
         action_index,
         frame_index,
         animations,
     )
+    if display_scale is None:
+        display_scale = calculate_animation_scale(animations)
     display_width, display_height = calculate_display_size(
         frame_width,
         frame_height,
+        display_scale,
     )
 
     clear_canvas()
