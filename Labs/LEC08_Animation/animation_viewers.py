@@ -17,6 +17,7 @@ MAX_DISPLAY_WIDTH = 420
 MAX_DISPLAY_HEIGHT = 460
 FRAME_INTERVAL_SECONDS = 0.1
 ACTION_REPEAT_COUNT = 5
+ACTION_PAUSE_SECONDS = 1.0
 
 
 def next_frame_index(frame_index, frame_count):
@@ -87,11 +88,16 @@ def play_first_action(mario_sheet, repeat_count=1):
     return completed_playbacks
 
 
+def pause_after_action():
+    delay(ACTION_PAUSE_SECONDS)
+
+
 def main():
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     try:
         mario_sheet = load_image(SPRITE_SHEET_PATH)
         play_first_action(mario_sheet, ACTION_REPEAT_COUNT)
+        pause_after_action()
     finally:
         close_canvas()
 
