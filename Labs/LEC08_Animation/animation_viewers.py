@@ -59,23 +59,28 @@ def draw_first_action_frame(mario_sheet, frame_index):
     update_canvas()
 
 
+def play_first_action_once(mario_sheet):
+    frame_index = 0
+    frames_drawn = 0
+    previous_frame_time = monotonic()
+    while frames_drawn < FRAME_COLUMNS:
+        now = monotonic()
+        if frames_drawn and not frame_interval_elapsed(now, previous_frame_time):
+            delay(0.005)
+            continue
+
+        draw_first_action_frame(mario_sheet, frame_index)
+        frame_index = next_frame_index(frame_index, FRAME_COLUMNS)
+        frames_drawn += 1
+        previous_frame_time = now
+    return frames_drawn
+
+
 def main():
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     try:
         mario_sheet = load_image(SPRITE_SHEET_PATH)
-        frame_index = 0
-        frames_drawn = 0
-        previous_frame_time = monotonic()
-        while frames_drawn < FRAME_COLUMNS:
-            now = monotonic()
-            if frames_drawn and not frame_interval_elapsed(now, previous_frame_time):
-                delay(0.005)
-                continue
-
-            draw_first_action_frame(mario_sheet, frame_index)
-            frame_index = next_frame_index(frame_index, FRAME_COLUMNS)
-            frames_drawn += 1
-            previous_frame_time = now
+        play_first_action_once(mario_sheet)
     finally:
         close_canvas()
 
