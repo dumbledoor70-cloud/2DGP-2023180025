@@ -142,26 +142,12 @@ def calculate_display_size(frame_width, frame_height):
     return round(frame_width * scale), round(frame_height * scale)
 
 
-def get_frame_rect(action_index, frame_index):
-    if not 0 <= action_index < len(ACTION_ROWS):
-        raise IndexError("Action index is outside the sprite sheet")
-    if not 0 <= frame_index < FRAME_COLUMNS:
+def get_frame_rect(action_index, frame_index, animations=MARIO_ANIMATIONS):
+    if not 0 <= action_index < len(animations):
+        raise IndexError("Action index is outside the animation list")
+    if not 0 <= frame_index < len(animations[action_index]):
         raise IndexError("Frame index is outside the action")
-
-    action_top, action_bottom = ACTION_ROWS[action_index]
-    frame_left = frame_index * SHEET_WIDTH // FRAME_COLUMNS
-    next_frame_left = (frame_index + 1) * SHEET_WIDTH // FRAME_COLUMNS
-    frame_bottom = SHEET_HEIGHT - action_bottom
-    frame_width = next_frame_left - frame_left
-    frame_height = action_bottom - action_top
-    if (
-        frame_left < 0
-        or frame_bottom < 0
-        or frame_left + frame_width > SHEET_WIDTH
-        or frame_bottom + frame_height > SHEET_HEIGHT
-    ):
-        raise ValueError("Frame rectangle is outside the sprite sheet")
-    return frame_left, frame_bottom, frame_width, frame_height
+    return animations[action_index][frame_index]
 
 
 def draw_action_frame(mario_sheet, action_index, frame_index):

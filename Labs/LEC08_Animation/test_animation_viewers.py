@@ -49,6 +49,18 @@ class AnimationViewerTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     viewer.validate_animations(animations, 50, 50)
 
+    def test_frame_lookup_returns_explicit_variable_rectangles(self):
+        animations = (
+            ((4, 5, 18, 33), (22, 8, 10, 30)),
+            ((0, 0, 7, 9),),
+        )
+
+        self.assertEqual(viewer.get_frame_rect(0, 0, animations), (4, 5, 18, 33))
+        self.assertEqual(viewer.get_frame_rect(0, 1, animations), (22, 8, 10, 30))
+        self.assertEqual(viewer.get_frame_rect(1, 0, animations), (0, 0, 7, 9))
+        with self.assertRaises(IndexError):
+            viewer.get_frame_rect(1, 1, animations)
+
     def test_grid_builder_supports_different_frame_counts(self):
         animations = viewer.build_grid_animations(
             120,
