@@ -270,6 +270,59 @@ class AnimationViewerTests(unittest.TestCase):
             viewer.calculate_animation_scale(animations),
         )
 
+    def test_main_runs_different_frame_counts_and_wraps(self):
+        animations = (
+            ((0, 0, 40, 40), (40, 0, 80, 20)),
+            (
+                (0, 40, 60, 30),
+                (60, 40, 30, 60),
+                (90, 40, 50, 50),
+            ),
+        )
+        rendered_frames = []
+        wraps = [0]
+        ticks = iter(index * 0.11 for index in range(200))
+        original_update = viewer.update_animation
+
+        def update_and_count_wraps(state, now):
+            previous_phase = state.phase
+            previous_action = state.action_index
+            frame = original_update(state, now)
+            if (
+                previous_phase == viewer.PAUSING
+                and state.phase == viewer.PLAYING
+                and previous_action == 1
+                and state.action_index == 0
+            ):
+                wraps[0] += 1
+            return frame
+
+        def events_for_one_cycle():
+            if wraps[0]:
+                return [SimpleNamespace(type=viewer.SDL_QUIT)]
+            return []
+
+        def record_frame(_sheet, action_index, frame_index, _animations, _scale):
+            rendered_frames.append((action_index, frame_index))
+
+        with (
+            patch.object(viewer, "open_canvas"),
+            patch.object(viewer, "load_image", return_value=object()),
+            patch.object(viewer, "get_events", side_effect=events_for_one_cycle),
+            patch.object(viewer, "monotonic", side_effect=lambda: next(ticks)),
+            patch.object(viewer, "update_animation", side_effect=update_and_count_wraps),
+            patch.object(viewer, "draw_action_frame", side_effect=record_frame),
+            patch.object(viewer, "delay"),
+            patch.object(viewer, "close_canvas") as close_canvas,
+        ):
+            viewer.main(animations)
+
+        expected_frames = [(0, index % 2) for index in range(10)]
+        expected_frames.extend((1, index % 3) for index in range(15))
+        self.assertEqual(rendered_frames, expected_frames)
+        self.assertEqual(wraps[0], 1)
+        close_canvas.assert_called_once()
+
     def test_grid_builder_supports_different_frame_counts(self):
         animations = viewer.build_grid_animations(
             120,
