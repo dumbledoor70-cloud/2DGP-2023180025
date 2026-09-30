@@ -142,7 +142,7 @@ def calculate_display_size(frame_width, frame_height):
     return round(frame_width * scale), round(frame_height * scale)
 
 
-def get_frame_rect(action_index, frame_index, animations=MARIO_ANIMATIONS):
+def get_frame_rect(action_index, frame_index, animations=MARIO_TRIMMED_ANIMATIONS):
     if not 0 <= action_index < len(animations):
         raise IndexError("Action index is outside the animation list")
     if not 0 <= frame_index < len(animations[action_index]):
@@ -154,7 +154,7 @@ def draw_action_frame(
     mario_sheet,
     action_index,
     frame_index,
-    animations=MARIO_ANIMATIONS,
+    animations=MARIO_TRIMMED_ANIMATIONS,
 ):
     frame_left, frame_bottom, frame_width, frame_height = get_frame_rect(
         action_index,

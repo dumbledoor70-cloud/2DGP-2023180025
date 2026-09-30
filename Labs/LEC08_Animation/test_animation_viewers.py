@@ -25,6 +25,10 @@ class AnimationViewerTests(unittest.TestCase):
             for frame in animation
         }
         self.assertEqual(len(sizes), 48)
+        self.assertEqual(
+            viewer.get_frame_rect(3, 7),
+            viewer.MARIO_TRIMMED_ANIMATIONS[3][7],
+        )
 
     def test_animation_validation_accepts_variable_rectangles(self):
         animations = (
