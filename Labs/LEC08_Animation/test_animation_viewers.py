@@ -26,6 +26,29 @@ class AnimationViewerTests(unittest.TestCase):
         }
         self.assertEqual(len(sizes), 48)
 
+    def test_animation_validation_accepts_variable_rectangles(self):
+        animations = (
+            ((0, 0, 20, 30), (20, 0, 15, 40)),
+            ((0, 40, 50, 10),),
+        )
+        self.assertIs(
+            viewer.validate_animations(animations, 50, 50),
+            animations,
+        )
+
+    def test_animation_validation_rejects_empty_and_out_of_bounds_data(self):
+        invalid_configs = (
+            (),
+            ((),),
+            (((0, 0, 0, 10),),),
+            (((49, 0, 2, 10),),),
+            (((0, 0, 10),),),
+        )
+        for animations in invalid_configs:
+            with self.subTest(animations=animations):
+                with self.assertRaises(ValueError):
+                    viewer.validate_animations(animations, 50, 50)
+
     def test_grid_builder_supports_different_frame_counts(self):
         animations = viewer.build_grid_animations(
             120,

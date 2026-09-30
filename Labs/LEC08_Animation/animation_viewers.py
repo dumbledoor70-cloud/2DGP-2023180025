@@ -41,6 +41,23 @@ def build_grid_animations(sheet_width, sheet_height, action_rows, frame_counts):
     return tuple(animations)
 
 
+def validate_animations(animations, sheet_width, sheet_height):
+    if not animations:
+        raise ValueError("At least one animation is required")
+    for animation in animations:
+        if not animation:
+            raise ValueError("Every animation must contain at least one frame")
+        for frame in animation:
+            if len(frame) != 4:
+                raise ValueError("Frame rectangles must contain four values")
+            left, bottom, width, height = frame
+            if left < 0 or bottom < 0 or width <= 0 or height <= 0:
+                raise ValueError("Frame rectangles must have positive in-bounds sizes")
+            if left + width > sheet_width or bottom + height > sheet_height:
+                raise ValueError("Frame rectangle is outside the sprite sheet")
+    return animations
+
+
 MARIO_ANIMATIONS = build_grid_animations(
     SHEET_WIDTH,
     SHEET_HEIGHT,
