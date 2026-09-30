@@ -15,6 +15,12 @@ class AnimationViewerTests(unittest.TestCase):
         self.assertEqual(state.action_index, 0)
         self.assertEqual(state.frame_index, 0)
 
+    def test_animation_state_rejects_invalid_frame_lists(self):
+        for animations in ((), ((),), (((1440, 0, 40, 20),),)):
+            with self.subTest(animations=animations):
+                with self.assertRaises(ValueError):
+                    viewer.AnimationState(animations)
+
     def test_update_uses_each_actions_frame_count(self):
         animations = (
             ((0, 0, 20, 30), (20, 0, 10, 40)),

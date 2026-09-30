@@ -100,6 +100,7 @@ MARIO_TRIMMED_ANIMATIONS = (
 
 class AnimationState:
     def __init__(self, animations=MARIO_TRIMMED_ANIMATIONS):
+        validate_animations(animations, SHEET_WIDTH, SHEET_HEIGHT)
         self.animations = animations
         self.action_index = 0
         self.frame_index = 0
