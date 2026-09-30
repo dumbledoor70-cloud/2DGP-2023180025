@@ -61,6 +61,28 @@ class AnimationViewerTests(unittest.TestCase):
         with self.assertRaises(IndexError):
             viewer.get_frame_rect(1, 1, animations)
 
+    def test_renderer_draws_custom_frame_rectangle_and_size(self):
+        class FakeSheet:
+            def __init__(self):
+                self.calls = []
+
+            def clip_draw(self, *arguments):
+                self.calls.append(arguments)
+
+        animations = (((4, 5, 18, 33), (22, 8, 10, 30)),)
+        sheet = FakeSheet()
+        with (
+            patch.object(viewer, "clear_canvas"),
+            patch.object(viewer, "update_canvas"),
+        ):
+            viewer.draw_action_frame(sheet, 0, 1, animations)
+
+        self.assertEqual(sheet.calls[-1][:4], (22, 8, 10, 30))
+        self.assertEqual(
+            sheet.calls[-1][-2:],
+            viewer.calculate_display_size(10, 30),
+        )
+
     def test_grid_builder_supports_different_frame_counts(self):
         animations = viewer.build_grid_animations(
             120,

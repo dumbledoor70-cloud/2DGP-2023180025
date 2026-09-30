@@ -150,10 +150,16 @@ def get_frame_rect(action_index, frame_index, animations=MARIO_ANIMATIONS):
     return animations[action_index][frame_index]
 
 
-def draw_action_frame(mario_sheet, action_index, frame_index):
+def draw_action_frame(
+    mario_sheet,
+    action_index,
+    frame_index,
+    animations=MARIO_ANIMATIONS,
+):
     frame_left, frame_bottom, frame_width, frame_height = get_frame_rect(
         action_index,
         frame_index,
+        animations,
     )
     display_width, display_height = calculate_display_size(
         frame_width,
