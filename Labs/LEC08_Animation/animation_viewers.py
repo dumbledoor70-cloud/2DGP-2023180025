@@ -197,10 +197,11 @@ def update_animation(state, now):
             return None
 
         frame_to_draw = (state.action_index, state.frame_index)
+        frame_count = len(state.animations[state.action_index])
         state.frame_index, state.completed_playbacks = advance_playback_frame(
             state.frame_index,
             state.completed_playbacks,
-            FRAME_COLUMNS,
+            frame_count,
         )
         if state.completed_playbacks == ACTION_REPEAT_COUNT:
             state.phase = PAUSING
@@ -212,7 +213,7 @@ def update_animation(state, now):
     if state.phase == PAUSING and now >= state.pause_until:
         state.action_index = next_action_index(
             state.action_index,
-            len(ACTION_ROWS),
+            len(state.animations),
         )
         state.frame_index = 0
         state.completed_playbacks = 0

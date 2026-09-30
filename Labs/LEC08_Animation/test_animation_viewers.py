@@ -15,6 +15,21 @@ class AnimationViewerTests(unittest.TestCase):
         self.assertEqual(state.action_index, 0)
         self.assertEqual(state.frame_index, 0)
 
+    def test_update_uses_each_actions_frame_count(self):
+        animations = (
+            ((0, 0, 20, 30), (20, 0, 10, 40)),
+            ((0, 40, 50, 10),),
+        )
+        state = viewer.AnimationState(animations)
+
+        for frame_number in range(10):
+            frame = viewer.update_animation(state, frame_number * 0.11)
+            self.assertEqual(frame, (0, frame_number % 2))
+            self.assertEqual(state.completed_playbacks, (frame_number + 1) // 2)
+
+        self.assertEqual(state.phase, viewer.PAUSING)
+        self.assertEqual(state.completed_playbacks, viewer.ACTION_REPEAT_COUNT)
+
     def test_mario_animation_data_has_five_twelve_frame_actions(self):
         self.assertEqual(len(viewer.MARIO_ANIMATIONS), 5)
         self.assertEqual(
