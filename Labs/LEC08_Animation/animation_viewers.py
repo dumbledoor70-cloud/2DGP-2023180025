@@ -36,8 +36,8 @@ def advance_playback_frame(frame_index, completed_playbacks, frame_count):
     return next_index, completed_playbacks
 
 
-def next_action_index(action_index):
-    return action_index + 1
+def next_action_index(action_index, action_count):
+    return (action_index + 1) % action_count
 
 
 def frame_interval_elapsed(now, previous_frame_time):
@@ -107,10 +107,10 @@ def main():
     try:
         mario_sheet = load_image(SPRITE_SHEET_PATH)
         action_index = 0
-        while action_index < len(ACTION_ROWS) - 1:
+        while True:
             play_action(mario_sheet, action_index, ACTION_REPEAT_COUNT)
             pause_after_action()
-            action_index = next_action_index(action_index)
+            action_index = next_action_index(action_index, len(ACTION_ROWS))
     finally:
         close_canvas()
 
