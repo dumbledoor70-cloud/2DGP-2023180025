@@ -48,8 +48,8 @@ def calculate_display_size(frame_width, frame_height):
     return round(frame_width * scale), round(frame_height * scale)
 
 
-def draw_first_action_frame(mario_sheet, frame_index):
-    action_top, action_bottom = ACTION_ROWS[0]
+def draw_action_frame(mario_sheet, action_index, frame_index):
+    action_top, action_bottom = ACTION_ROWS[action_index]
     frame_left = frame_index * SHEET_WIDTH // FRAME_COLUMNS
     next_frame_left = (frame_index + 1) * SHEET_WIDTH // FRAME_COLUMNS
     frame_width = next_frame_left - frame_left
@@ -74,7 +74,7 @@ def draw_first_action_frame(mario_sheet, frame_index):
     update_canvas()
 
 
-def play_first_action(mario_sheet, repeat_count=1):
+def play_action(mario_sheet, action_index, repeat_count=1):
     frame_index = 0
     completed_playbacks = 0
     previous_frame_time = monotonic()
@@ -84,7 +84,7 @@ def play_first_action(mario_sheet, repeat_count=1):
             delay(0.005)
             continue
 
-        draw_first_action_frame(mario_sheet, frame_index)
+        draw_action_frame(mario_sheet, action_index, frame_index)
         frame_index, completed_playbacks = advance_playback_frame(
             frame_index,
             completed_playbacks,
@@ -102,7 +102,7 @@ def main():
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     try:
         mario_sheet = load_image(SPRITE_SHEET_PATH)
-        play_first_action(mario_sheet, ACTION_REPEAT_COUNT)
+        play_action(mario_sheet, 0, ACTION_REPEAT_COUNT)
         pause_after_action()
     finally:
         close_canvas()
