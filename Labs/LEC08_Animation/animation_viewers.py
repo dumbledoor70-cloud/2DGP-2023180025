@@ -62,6 +62,8 @@ def should_quit(events):
 
 
 def calculate_display_size(frame_width, frame_height):
+    if frame_width <= 0 or frame_height <= 0:
+        raise ValueError("Frame dimensions must be positive")
     scale = min(
         MAX_DISPLAY_WIDTH / frame_width,
         MAX_DISPLAY_HEIGHT / frame_height,
@@ -69,12 +71,33 @@ def calculate_display_size(frame_width, frame_height):
     return round(frame_width * scale), round(frame_height * scale)
 
 
-def draw_action_frame(mario_sheet, action_index, frame_index):
+def get_frame_rect(action_index, frame_index):
+    if not 0 <= action_index < len(ACTION_ROWS):
+        raise IndexError("Action index is outside the sprite sheet")
+    if not 0 <= frame_index < FRAME_COLUMNS:
+        raise IndexError("Frame index is outside the action")
+
     action_top, action_bottom = ACTION_ROWS[action_index]
     frame_left = frame_index * SHEET_WIDTH // FRAME_COLUMNS
     next_frame_left = (frame_index + 1) * SHEET_WIDTH // FRAME_COLUMNS
+    frame_bottom = SHEET_HEIGHT - action_bottom
     frame_width = next_frame_left - frame_left
     frame_height = action_bottom - action_top
+    if (
+        frame_left < 0
+        or frame_bottom < 0
+        or frame_left + frame_width > SHEET_WIDTH
+        or frame_bottom + frame_height > SHEET_HEIGHT
+    ):
+        raise ValueError("Frame rectangle is outside the sprite sheet")
+    return frame_left, frame_bottom, frame_width, frame_height
+
+
+def draw_action_frame(mario_sheet, action_index, frame_index):
+    frame_left, frame_bottom, frame_width, frame_height = get_frame_rect(
+        action_index,
+        frame_index,
+    )
     display_width, display_height = calculate_display_size(
         frame_width,
         frame_height,
@@ -84,7 +107,7 @@ def draw_action_frame(mario_sheet, action_index, frame_index):
     mario_sheet.clip_draw(0, 0, 1, 1, CENTER_X, CENTER_Y, CANVAS_WIDTH, CANVAS_HEIGHT)
     mario_sheet.clip_draw(
         frame_left,
-        SHEET_HEIGHT - action_bottom,
+        frame_bottom,
         frame_width,
         frame_height,
         CENTER_X,
