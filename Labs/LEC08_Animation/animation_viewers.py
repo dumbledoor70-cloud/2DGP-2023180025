@@ -23,6 +23,18 @@ MAX_DISPLAY_HEIGHT = 460
 FRAME_INTERVAL_SECONDS = 0.1
 ACTION_REPEAT_COUNT = 5
 ACTION_PAUSE_SECONDS = 1.0
+PLAYING = "playing"
+PAUSING = "pausing"
+
+
+class AnimationState:
+    def __init__(self):
+        self.action_index = 0
+        self.frame_index = 0
+        self.completed_playbacks = 0
+        self.phase = PLAYING
+        self.next_frame_time = 0.0
+        self.pause_until = 0.0
 
 
 def next_frame_index(frame_index, frame_count):
@@ -38,10 +50,6 @@ def advance_playback_frame(frame_index, completed_playbacks, frame_count):
 
 def next_action_index(action_index, action_count):
     return (action_index + 1) % action_count
-
-
-def frame_interval_elapsed(now, previous_frame_time):
-    return now >= previous_frame_time + FRAME_INTERVAL_SECONDS
 
 
 def calculate_display_size(frame_width, frame_height):
@@ -78,39 +86,46 @@ def draw_action_frame(mario_sheet, action_index, frame_index):
     update_canvas()
 
 
-def play_action(mario_sheet, action_index, repeat_count=1):
-    frame_index = 0
-    completed_playbacks = 0
-    previous_frame_time = monotonic()
-    while completed_playbacks < repeat_count:
-        now = monotonic()
-        if frame_index and not frame_interval_elapsed(now, previous_frame_time):
-            delay(0.005)
-            continue
+def update_animation(state, now):
+    if state.phase == PLAYING:
+        if now < state.next_frame_time:
+            return None
 
-        draw_action_frame(mario_sheet, action_index, frame_index)
-        frame_index, completed_playbacks = advance_playback_frame(
-            frame_index,
-            completed_playbacks,
+        frame_to_draw = (state.action_index, state.frame_index)
+        state.frame_index, state.completed_playbacks = advance_playback_frame(
+            state.frame_index,
+            state.completed_playbacks,
             FRAME_COLUMNS,
         )
-        previous_frame_time = now
-    return completed_playbacks
+        if state.completed_playbacks == ACTION_REPEAT_COUNT:
+            state.phase = PAUSING
+            state.pause_until = now + ACTION_PAUSE_SECONDS
+        else:
+            state.next_frame_time = now + FRAME_INTERVAL_SECONDS
+        return frame_to_draw
 
-
-def pause_after_action():
-    delay(ACTION_PAUSE_SECONDS)
+    if state.phase == PAUSING and now >= state.pause_until:
+        state.action_index = next_action_index(
+            state.action_index,
+            len(ACTION_ROWS),
+        )
+        state.frame_index = 0
+        state.completed_playbacks = 0
+        state.phase = PLAYING
+        state.next_frame_time = now
+    return None
 
 
 def main():
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     try:
         mario_sheet = load_image(SPRITE_SHEET_PATH)
-        action_index = 0
+        state = AnimationState()
         while True:
-            play_action(mario_sheet, action_index, ACTION_REPEAT_COUNT)
-            pause_after_action()
-            action_index = next_action_index(action_index, len(ACTION_ROWS))
+            frame_to_draw = update_animation(state, monotonic())
+            if frame_to_draw is not None:
+                draw_action_frame(mario_sheet, *frame_to_draw)
+            delay(0.005)
     finally:
         close_canvas()
 
