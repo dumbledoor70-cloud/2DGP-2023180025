@@ -52,6 +52,15 @@ def next_action_index(action_index, action_count):
     return (action_index + 1) % action_count
 
 
+def should_quit(events):
+    for event in events:
+        if event.type == SDL_QUIT:
+            return True
+        if event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
+            return True
+    return False
+
+
 def calculate_display_size(frame_width, frame_height):
     scale = min(
         MAX_DISPLAY_WIDTH / frame_width,
@@ -118,15 +127,20 @@ def update_animation(state, now):
 
 def main():
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
+    mario_sheet = None
     try:
         mario_sheet = load_image(SPRITE_SHEET_PATH)
         state = AnimationState()
         while True:
+            if should_quit(get_events()):
+                break
+
             frame_to_draw = update_animation(state, monotonic())
             if frame_to_draw is not None:
                 draw_action_frame(mario_sheet, *frame_to_draw)
             delay(0.005)
     finally:
+        mario_sheet = None
         close_canvas()
 
 
