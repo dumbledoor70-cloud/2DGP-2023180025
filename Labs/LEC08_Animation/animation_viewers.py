@@ -1,3 +1,5 @@
+from time import monotonic
+
 from pico2d import *
 
 
@@ -13,10 +15,15 @@ CENTER_X = CANVAS_WIDTH // 2
 CENTER_Y = CANVAS_HEIGHT // 2
 MAX_DISPLAY_WIDTH = 420
 MAX_DISPLAY_HEIGHT = 460
+FRAME_INTERVAL_SECONDS = 0.1
 
 
 def next_frame_index(frame_index, frame_count):
     return (frame_index + 1) % frame_count
+
+
+def frame_interval_elapsed(now, previous_frame_time):
+    return now >= previous_frame_time + FRAME_INTERVAL_SECONDS
 
 
 def calculate_display_size(frame_width, frame_height):
@@ -58,11 +65,17 @@ def main():
         mario_sheet = load_image(SPRITE_SHEET_PATH)
         frame_index = 0
         frames_drawn = 0
+        previous_frame_time = monotonic()
         while frames_drawn < FRAME_COLUMNS:
+            now = monotonic()
+            if frames_drawn and not frame_interval_elapsed(now, previous_frame_time):
+                delay(0.005)
+                continue
+
             draw_first_action_frame(mario_sheet, frame_index)
             frame_index = next_frame_index(frame_index, FRAME_COLUMNS)
             frames_drawn += 1
-            delay(0.1)
+            previous_frame_time = now
     finally:
         close_canvas()
 
