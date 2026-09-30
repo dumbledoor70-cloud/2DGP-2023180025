@@ -284,6 +284,18 @@ class AnimationViewerTests(unittest.TestCase):
         self.assertEqual(animations[0][1], (60, 50, 60, 30))
         self.assertEqual(animations[1][2], (80, 0, 40, 50))
 
+    def test_grid_builder_rejects_mismatched_or_invalid_action_data(self):
+        invalid_inputs = (
+            (120, 80, ((0, 30),), (2, 3)),
+            (120, 80, ((0, 30),), (0,)),
+            (120, 80, ((30, 30),), (2,)),
+            (0, 80, ((0, 30),), (2,)),
+        )
+        for arguments in invalid_inputs:
+            with self.subTest(arguments=arguments):
+                with self.assertRaises(ValueError):
+                    viewer.build_grid_animations(*arguments)
+
     def test_frame_indices_wrap(self):
         self.assertEqual(viewer.next_frame_index(10, 12), 11)
         self.assertEqual(viewer.next_frame_index(11, 12), 0)

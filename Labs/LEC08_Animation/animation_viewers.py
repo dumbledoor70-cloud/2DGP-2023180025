@@ -30,8 +30,17 @@ AnimationFrames = tuple[FrameRect, ...]
 
 
 def build_grid_animations(sheet_width, sheet_height, action_rows, frame_counts):
+    if sheet_width <= 0 or sheet_height <= 0:
+        raise ValueError("Sprite sheet dimensions must be positive")
+    if len(action_rows) != len(frame_counts):
+        raise ValueError("Each action row needs one frame count")
+
     animations = []
     for (top, bottom), frame_count in zip(action_rows, frame_counts):
+        if not 0 <= top < bottom <= sheet_height:
+            raise ValueError("Action row is outside the sprite sheet")
+        if frame_count <= 0:
+            raise ValueError("Every action must have at least one frame")
         frames = []
         for frame_index in range(frame_count):
             left = frame_index * sheet_width // frame_count
