@@ -9,8 +9,13 @@ SPRITE_SHEET_PATH = "mario.png"
 SHEET_WIDTH = 1456
 SHEET_HEIGHT = 730
 FRAME_COLUMNS = 12
-FIRST_ACTION_TOP = 0
-FIRST_ACTION_BOTTOM = 156
+ACTION_ROWS = (
+    (0, 156),
+    (156, 300),
+    (300, 436),
+    (436, 598),
+    (598, 730),
+)
 CENTER_X = CANVAS_WIDTH // 2
 CENTER_Y = CANVAS_HEIGHT // 2
 MAX_DISPLAY_WIDTH = 420
@@ -44,10 +49,11 @@ def calculate_display_size(frame_width, frame_height):
 
 
 def draw_first_action_frame(mario_sheet, frame_index):
+    action_top, action_bottom = ACTION_ROWS[0]
     frame_left = frame_index * SHEET_WIDTH // FRAME_COLUMNS
     next_frame_left = (frame_index + 1) * SHEET_WIDTH // FRAME_COLUMNS
     frame_width = next_frame_left - frame_left
-    frame_height = FIRST_ACTION_BOTTOM - FIRST_ACTION_TOP
+    frame_height = action_bottom - action_top
     display_width, display_height = calculate_display_size(
         frame_width,
         frame_height,
@@ -57,7 +63,7 @@ def draw_first_action_frame(mario_sheet, frame_index):
     mario_sheet.clip_draw(0, 0, 1, 1, CENTER_X, CENTER_Y, CANVAS_WIDTH, CANVAS_HEIGHT)
     mario_sheet.clip_draw(
         frame_left,
-        SHEET_HEIGHT - FIRST_ACTION_BOTTOM,
+        SHEET_HEIGHT - action_bottom,
         frame_width,
         frame_height,
         CENTER_X,
