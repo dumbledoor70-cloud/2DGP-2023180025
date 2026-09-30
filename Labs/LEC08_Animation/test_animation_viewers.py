@@ -172,6 +172,10 @@ class AnimationViewerTests(unittest.TestCase):
 
         self.assertEqual(sheet.calls[-1][:4], (22, 8, 10, 30))
         self.assertEqual(
+            sheet.calls[-1][4:6],
+            (viewer.CENTER_X, viewer.CENTER_Y),
+        )
+        self.assertEqual(
             sheet.calls[-1][-2:],
             viewer.calculate_display_size(
                 10,
