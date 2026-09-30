@@ -111,6 +111,24 @@ class AnimationViewerTests(unittest.TestCase):
             viewer.calculate_display_size(10, 30),
         )
 
+    def test_main_passes_custom_frame_lists_through_to_renderer(self):
+        animations = (((5, 7, 20, 30),), ((25, 7, 10, 40), (35, 7, 12, 28)))
+        sheet = object()
+        events = iter([[], [SimpleNamespace(type=viewer.SDL_QUIT)]])
+
+        with (
+            patch.object(viewer, "open_canvas"),
+            patch.object(viewer, "load_image", return_value=sheet),
+            patch.object(viewer, "get_events", side_effect=lambda: next(events)),
+            patch.object(viewer, "update_animation", return_value=(0, 0)),
+            patch.object(viewer, "draw_action_frame") as draw_frame,
+            patch.object(viewer, "delay"),
+            patch.object(viewer, "close_canvas"),
+        ):
+            viewer.main(animations)
+
+        draw_frame.assert_called_once_with(sheet, 0, 0, animations)
+
     def test_grid_builder_supports_different_frame_counts(self):
         animations = viewer.build_grid_animations(
             120,

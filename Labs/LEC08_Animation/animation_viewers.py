@@ -222,19 +222,20 @@ def update_animation(state, now):
     return None
 
 
-def main():
+def main(animations=MARIO_TRIMMED_ANIMATIONS):
+    validate_animations(animations, SHEET_WIDTH, SHEET_HEIGHT)
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     mario_sheet = None
     try:
         mario_sheet = load_image(SPRITE_SHEET_PATH)
-        state = AnimationState()
+        state = AnimationState(animations)
         while True:
             if should_quit(get_events()):
                 break
 
             frame_to_draw = update_animation(state, monotonic())
             if frame_to_draw is not None:
-                draw_action_frame(mario_sheet, *frame_to_draw)
+                draw_action_frame(mario_sheet, *frame_to_draw, state.animations)
             delay(0.005)
     finally:
         mario_sheet = None
