@@ -21,6 +21,19 @@ class AnimationViewerTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     viewer.AnimationState(animations)
 
+    def test_repeat_count_is_configurable_with_five_as_default(self):
+        animation = (((0, 0, 20, 30), (20, 0, 10, 40)),)
+        self.assertEqual(viewer.AnimationState(animation).repeat_count, 5)
+        state = viewer.AnimationState(animation, repeat_count=2)
+
+        for frame_number in range(4):
+            viewer.update_animation(state, frame_number * 0.11)
+
+        self.assertEqual(state.completed_playbacks, 2)
+        self.assertEqual(state.phase, viewer.PAUSING)
+        with self.assertRaises(ValueError):
+            viewer.AnimationState(animation, repeat_count=0)
+
     def test_update_uses_each_actions_frame_count(self):
         animations = (
             ((0, 0, 20, 30), (20, 0, 10, 40)),

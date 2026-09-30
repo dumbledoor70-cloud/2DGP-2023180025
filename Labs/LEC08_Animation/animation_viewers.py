@@ -99,9 +99,16 @@ MARIO_TRIMMED_ANIMATIONS = (
 
 
 class AnimationState:
-    def __init__(self, animations=MARIO_TRIMMED_ANIMATIONS):
+    def __init__(
+        self,
+        animations=MARIO_TRIMMED_ANIMATIONS,
+        repeat_count=ACTION_REPEAT_COUNT,
+    ):
         validate_animations(animations, SHEET_WIDTH, SHEET_HEIGHT)
+        if repeat_count <= 0:
+            raise ValueError("Repeat count must be positive")
         self.animations = animations
+        self.repeat_count = repeat_count
         self.action_index = 0
         self.frame_index = 0
         self.completed_playbacks = 0
@@ -204,7 +211,7 @@ def update_animation(state, now):
             state.completed_playbacks,
             frame_count,
         )
-        if state.completed_playbacks == ACTION_REPEAT_COUNT:
+        if state.completed_playbacks == state.repeat_count:
             state.phase = PAUSING
             state.pause_until = now + ACTION_PAUSE_SECONDS
         else:
