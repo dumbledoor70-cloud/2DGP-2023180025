@@ -112,12 +112,18 @@ class AnimationState:
         self,
         animations=MARIO_TRIMMED_ANIMATIONS,
         repeat_count=ACTION_REPEAT_COUNT,
+        sheet_width=SHEET_WIDTH,
+        sheet_height=SHEET_HEIGHT,
     ):
-        validate_animations(animations, SHEET_WIDTH, SHEET_HEIGHT)
+        validate_animations(animations, sheet_width, sheet_height)
         if repeat_count <= 0:
             raise ValueError("Repeat count must be positive")
         self.animations = animations
-        self.display_scale = calculate_animation_scale(animations)
+        self.display_scale = calculate_animation_scale(
+            animations,
+            sheet_width,
+            sheet_height,
+        )
         self.repeat_count = repeat_count
         self.action_index = 0
         self.frame_index = 0
@@ -151,8 +157,12 @@ def should_quit(events):
     return False
 
 
-def calculate_animation_scale(animations):
-    validate_animations(animations, SHEET_WIDTH, SHEET_HEIGHT)
+def calculate_animation_scale(
+    animations,
+    sheet_width=SHEET_WIDTH,
+    sheet_height=SHEET_HEIGHT,
+):
+    validate_animations(animations, sheet_width, sheet_height)
     max_width = max(frame[2] for animation in animations for frame in animation)
     max_height = max(frame[3] for animation in animations for frame in animation)
     return min(MAX_DISPLAY_WIDTH / max_width, MAX_DISPLAY_HEIGHT / max_height)
@@ -252,13 +262,22 @@ def update_animation(state, now):
     return None
 
 
-def main(animations=MARIO_TRIMMED_ANIMATIONS):
-    validate_animations(animations, SHEET_WIDTH, SHEET_HEIGHT)
+def main(
+    animations=MARIO_TRIMMED_ANIMATIONS,
+    sheet_path=SPRITE_SHEET_PATH,
+    sheet_width=SHEET_WIDTH,
+    sheet_height=SHEET_HEIGHT,
+):
+    validate_animations(animations, sheet_width, sheet_height)
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     mario_sheet = None
     try:
-        mario_sheet = load_image(SPRITE_SHEET_PATH)
-        state = AnimationState(animations)
+        mario_sheet = load_image(sheet_path)
+        state = AnimationState(
+            animations,
+            sheet_width=sheet_width,
+            sheet_height=sheet_height,
+        )
         while True:
             if should_quit(get_events()):
                 break

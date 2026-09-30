@@ -25,6 +25,18 @@ class AnimationViewerTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     viewer.AnimationState(animations)
 
+    def test_animation_state_accepts_custom_sprite_sheet_dimensions(self):
+        animations = (((1600, 60, 100, 40),),)
+
+        state = viewer.AnimationState(
+            animations,
+            sheet_width=2000,
+            sheet_height=120,
+        )
+
+        self.assertIs(state.animations, animations)
+        self.assertGreater(state.display_scale, 0)
+
     def test_repeat_count_is_configurable_with_five_as_default(self):
         animation = (((0, 0, 20, 30), (20, 0, 10, 40)),)
         self.assertEqual(viewer.AnimationState(animation).repeat_count, 5)
@@ -269,6 +281,20 @@ class AnimationViewerTests(unittest.TestCase):
             animations,
             viewer.calculate_animation_scale(animations),
         )
+
+    def test_main_accepts_custom_sheet_path_and_dimensions(self):
+        animations = (((1600, 60, 100, 40),),)
+        events = iter([[SimpleNamespace(type=viewer.SDL_QUIT)]])
+
+        with (
+            patch.object(viewer, "open_canvas"),
+            patch.object(viewer, "load_image", return_value=object()) as load_image,
+            patch.object(viewer, "get_events", side_effect=lambda: next(events)),
+            patch.object(viewer, "close_canvas"),
+        ):
+            viewer.main(animations, "other_sheet.png", 2000, 120)
+
+        load_image.assert_called_once_with("other_sheet.png")
 
     def test_main_runs_different_frame_counts_and_wraps(self):
         animations = (
