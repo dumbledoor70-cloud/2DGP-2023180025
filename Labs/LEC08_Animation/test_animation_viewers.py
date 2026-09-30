@@ -184,6 +184,39 @@ class AnimationViewerTests(unittest.TestCase):
             ),
         )
 
+    def test_renderer_uses_each_mario_frame_rectangle(self):
+        class FakeSheet:
+            def __init__(self):
+                self.last_call = None
+
+            def clip_draw(self, *arguments):
+                self.last_call = arguments
+
+        sheet = FakeSheet()
+        display_scale = viewer.calculate_animation_scale(
+            viewer.MARIO_TRIMMED_ANIMATIONS
+        )
+        rendered_count = 0
+        with (
+            patch.object(viewer, "clear_canvas"),
+            patch.object(viewer, "update_canvas"),
+        ):
+            for action_index, animation in enumerate(viewer.MARIO_TRIMMED_ANIMATIONS):
+                for frame_index, rectangle in enumerate(animation):
+                    viewer.draw_action_frame(sheet, action_index, frame_index)
+                    self.assertEqual(sheet.last_call[:4], rectangle)
+                    self.assertEqual(
+                        sheet.last_call[-2:],
+                        viewer.calculate_display_size(
+                            rectangle[2],
+                            rectangle[3],
+                            display_scale,
+                        ),
+                    )
+                    rendered_count += 1
+
+        self.assertEqual(rendered_count, 60)
+
     def test_main_passes_custom_frame_lists_through_to_renderer(self):
         animations = (((5, 7, 20, 30),), ((25, 7, 10, 40), (35, 7, 12, 28)))
         sheet = object()
