@@ -22,6 +22,13 @@ def next_frame_index(frame_index, frame_count):
     return (frame_index + 1) % frame_count
 
 
+def advance_playback_frame(frame_index, completed_playbacks, frame_count):
+    next_index = next_frame_index(frame_index, frame_count)
+    if next_index == 0:
+        completed_playbacks += 1
+    return next_index, completed_playbacks
+
+
 def frame_interval_elapsed(now, previous_frame_time):
     return now >= previous_frame_time + FRAME_INTERVAL_SECONDS
 
@@ -61,19 +68,22 @@ def draw_first_action_frame(mario_sheet, frame_index):
 
 def play_first_action_once(mario_sheet):
     frame_index = 0
-    frames_drawn = 0
+    completed_playbacks = 0
     previous_frame_time = monotonic()
-    while frames_drawn < FRAME_COLUMNS:
+    while completed_playbacks < 1:
         now = monotonic()
-        if frames_drawn and not frame_interval_elapsed(now, previous_frame_time):
+        if frame_index and not frame_interval_elapsed(now, previous_frame_time):
             delay(0.005)
             continue
 
         draw_first_action_frame(mario_sheet, frame_index)
-        frame_index = next_frame_index(frame_index, FRAME_COLUMNS)
-        frames_drawn += 1
+        frame_index, completed_playbacks = advance_playback_frame(
+            frame_index,
+            completed_playbacks,
+            FRAME_COLUMNS,
+        )
         previous_frame_time = now
-    return frames_drawn
+    return completed_playbacks
 
 
 def main():
