@@ -9,6 +9,8 @@ SHEET_HEIGHT = 730
 FRAME_COLUMNS = 12
 FIRST_ACTION_TOP = 0
 FIRST_ACTION_BOTTOM = 156
+CENTER_X = CANVAS_WIDTH // 2
+CENTER_Y = CANVAS_HEIGHT // 2
 
 
 def main():
@@ -22,8 +24,8 @@ def main():
             SHEET_HEIGHT - FIRST_ACTION_BOTTOM,
             SHEET_WIDTH // FRAME_COLUMNS,
             FIRST_ACTION_BOTTOM - FIRST_ACTION_TOP,
-            400,
-            300,
+            CENTER_X,
+            CENTER_Y,
         )
         update_canvas()
         delay(0.01)
