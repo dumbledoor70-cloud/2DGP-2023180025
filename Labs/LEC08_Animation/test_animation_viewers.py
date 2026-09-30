@@ -12,6 +12,10 @@ class AnimationViewerTests(unittest.TestCase):
         state = viewer.AnimationState(animations)
 
         self.assertIs(state.animations, animations)
+        self.assertEqual(
+            state.display_scale,
+            viewer.calculate_animation_scale(animations),
+        )
         self.assertEqual(state.action_index, 0)
         self.assertEqual(state.frame_index, 0)
 
@@ -258,7 +262,13 @@ class AnimationViewerTests(unittest.TestCase):
         ):
             viewer.main(animations)
 
-        draw_frame.assert_called_once_with(sheet, 0, 0, animations)
+        draw_frame.assert_called_once_with(
+            sheet,
+            0,
+            0,
+            animations,
+            viewer.calculate_animation_scale(animations),
+        )
 
     def test_grid_builder_supports_different_frame_counts(self):
         animations = viewer.build_grid_animations(

@@ -108,6 +108,7 @@ class AnimationState:
         if repeat_count <= 0:
             raise ValueError("Repeat count must be positive")
         self.animations = animations
+        self.display_scale = calculate_animation_scale(animations)
         self.repeat_count = repeat_count
         self.action_index = 0
         self.frame_index = 0
@@ -255,7 +256,12 @@ def main(animations=MARIO_TRIMMED_ANIMATIONS):
 
             frame_to_draw = update_animation(state, monotonic())
             if frame_to_draw is not None:
-                draw_action_frame(mario_sheet, *frame_to_draw, state.animations)
+                draw_action_frame(
+                    mario_sheet,
+                    *frame_to_draw,
+                    state.animations,
+                    state.display_scale,
+                )
             delay(0.005)
     finally:
         mario_sheet = None
