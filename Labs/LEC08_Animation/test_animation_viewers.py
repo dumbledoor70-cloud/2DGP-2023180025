@@ -30,6 +30,36 @@ class AnimationViewerTests(unittest.TestCase):
         self.assertEqual(state.phase, viewer.PAUSING)
         self.assertEqual(state.completed_playbacks, viewer.ACTION_REPEAT_COUNT)
 
+    def test_transition_uses_next_actions_different_frame_count(self):
+        animations = (
+            ((0, 0, 20, 30), (20, 0, 10, 40)),
+            (
+                (0, 40, 50, 10),
+                (0, 30, 40, 10),
+                (0, 20, 30, 10),
+            ),
+        )
+        state = viewer.AnimationState(animations)
+        now = 0.0
+
+        for _ in range(10):
+            viewer.update_animation(state, now)
+            now += 0.11
+
+        self.assertEqual(state.phase, viewer.PAUSING)
+        pause_end = state.pause_until
+        viewer.update_animation(state, pause_end)
+        self.assertEqual(state.action_index, 1)
+
+        now = state.next_frame_time
+        for frame_number in range(15):
+            frame = viewer.update_animation(state, now)
+            self.assertEqual(frame, (1, frame_number % 3))
+            now += 0.11
+
+        self.assertEqual(state.phase, viewer.PAUSING)
+        self.assertEqual(state.completed_playbacks, viewer.ACTION_REPEAT_COUNT)
+
     def test_mario_animation_data_has_five_twelve_frame_actions(self):
         self.assertEqual(len(viewer.MARIO_ANIMATIONS), 5)
         self.assertEqual(
