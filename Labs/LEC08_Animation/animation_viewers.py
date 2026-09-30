@@ -99,7 +99,8 @@ MARIO_TRIMMED_ANIMATIONS = (
 
 
 class AnimationState:
-    def __init__(self):
+    def __init__(self, animations=MARIO_TRIMMED_ANIMATIONS):
+        self.animations = animations
         self.action_index = 0
         self.frame_index = 0
         self.completed_playbacks = 0

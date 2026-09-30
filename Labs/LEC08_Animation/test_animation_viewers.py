@@ -6,6 +6,15 @@ import animation_viewers as viewer
 
 
 class AnimationViewerTests(unittest.TestCase):
+    def test_animation_state_stores_custom_animation_lists(self):
+        animations = (((0, 0, 20, 30),), ((20, 0, 10, 40), (30, 0, 15, 25)))
+
+        state = viewer.AnimationState(animations)
+
+        self.assertIs(state.animations, animations)
+        self.assertEqual(state.action_index, 0)
+        self.assertEqual(state.frame_index, 0)
+
     def test_mario_animation_data_has_five_twelve_frame_actions(self):
         self.assertEqual(len(viewer.MARIO_ANIMATIONS), 5)
         self.assertEqual(
