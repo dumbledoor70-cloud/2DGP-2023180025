@@ -104,7 +104,16 @@ def draw_action_frame(mario_sheet, action_index, frame_index):
     )
 
     clear_canvas()
-    mario_sheet.clip_draw(0, 0, 1, 1, CENTER_X, CENTER_Y, CANVAS_WIDTH, CANVAS_HEIGHT)
+    mario_sheet.clip_draw(
+        0,
+        0,
+        1,
+        1,
+        CENTER_X,
+        CENTER_Y,
+        CANVAS_WIDTH,
+        CANVAS_HEIGHT,
+    )
     mario_sheet.clip_draw(
         frame_left,
         frame_bottom,

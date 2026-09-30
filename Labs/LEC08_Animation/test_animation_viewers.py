@@ -1,5 +1,6 @@
 import unittest
 from types import SimpleNamespace
+from unittest.mock import patch
 
 import animation_viewers as viewer
 
@@ -82,6 +83,38 @@ class AnimationViewerTests(unittest.TestCase):
                 ]
             )
         )
+
+    def test_main_closes_canvas_when_quit_arrives_during_pause(self):
+        events = iter(
+            [
+                [],
+                [
+                    SimpleNamespace(
+                        type=viewer.SDL_KEYDOWN,
+                        key=viewer.SDLK_ESCAPE,
+                    )
+                ],
+            ]
+        )
+        phases_seen = []
+
+        def enter_pause(state, _now):
+            state.phase = viewer.PAUSING
+            phases_seen.append(state.phase)
+            return None
+
+        with (
+            patch.object(viewer, "open_canvas"),
+            patch.object(viewer, "load_image", return_value=object()),
+            patch.object(viewer, "get_events", side_effect=lambda: next(events)),
+            patch.object(viewer, "update_animation", side_effect=enter_pause),
+            patch.object(viewer, "delay"),
+            patch.object(viewer, "close_canvas") as close_canvas,
+        ):
+            viewer.main()
+
+        self.assertEqual(phases_seen, [viewer.PAUSING])
+        close_canvas.assert_called_once()
 
 
 if __name__ == "__main__":
