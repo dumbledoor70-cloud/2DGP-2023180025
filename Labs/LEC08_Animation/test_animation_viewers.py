@@ -6,6 +6,13 @@ import animation_viewers as viewer
 
 
 class AnimationViewerTests(unittest.TestCase):
+    def test_mario_animation_data_has_five_twelve_frame_actions(self):
+        self.assertEqual(len(viewer.MARIO_ANIMATIONS), 5)
+        self.assertEqual(
+            [len(animation) for animation in viewer.MARIO_ANIMATIONS],
+            [12, 12, 12, 12, 12],
+        )
+
     def test_grid_builder_supports_different_frame_counts(self):
         animations = viewer.build_grid_animations(
             120,

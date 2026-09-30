@@ -41,6 +41,14 @@ def build_grid_animations(sheet_width, sheet_height, action_rows, frame_counts):
     return tuple(animations)
 
 
+MARIO_ANIMATIONS = build_grid_animations(
+    SHEET_WIDTH,
+    SHEET_HEIGHT,
+    ACTION_ROWS,
+    (FRAME_COLUMNS,) * len(ACTION_ROWS),
+)
+
+
 class AnimationState:
     def __init__(self):
         self.action_index = 0
