@@ -95,6 +95,26 @@ class ViewerSetupTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             viewer.update_position(state, -0.1)
 
+    def test_clamp_stops_position_at_scaled_canvas_edges(self):
+        actions = (
+            viewer.AnimationAction(
+                "large run",
+                (viewer.FrameRect(0, 0, 40, 30),),
+                direction_x=1,
+                direction_y=-1,
+            ),
+        )
+        state = viewer.AnimationState(actions)
+        state.x = 1190
+        state.y = 5
+
+        self.assertEqual(viewer.clamp_position(state), (1140.0, 45.0))
+        self.assertEqual(state.frame_index, 0)
+        self.assertEqual(state.completed_repeats, 0)
+
+        viewer.update_position(state, 1.0)
+        self.assertEqual(viewer.clamp_position(state), (1140.0, 45.0))
+
     def test_first_run_action_has_eleven_explicit_frames(self):
         self.assertEqual(len(viewer.RUN_RIGHT_FRAMES), 11)
         self.assertEqual(viewer.RUN_RIGHT_FRAMES[0], viewer.FrameRect(1, 39, 29, 39))

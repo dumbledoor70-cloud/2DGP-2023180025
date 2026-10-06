@@ -186,6 +186,19 @@ def update_position(state, elapsed_seconds):
     return state.x, state.y
 
 
+def clamp_position(state, canvas_width=CANVAS_WIDTH, canvas_height=CANVAS_HEIGHT):
+    action = state.actions[state.action_index]
+    max_width = max(get_display_size(frame)[0] for frame in action.frames)
+    max_height = max(get_display_size(frame)[1] for frame in action.frames)
+    half_width = max_width / 2
+    half_height = max_height / 2
+    if half_width * 2 > canvas_width or half_height * 2 > canvas_height:
+        raise ValueError("Scaled Sonic frame is larger than the canvas")
+    state.x = min(max(state.x, half_width), canvas_width - half_width)
+    state.y = min(max(state.y, half_height), canvas_height - half_height)
+    return state.x, state.y
+
+
 def validate_actions(actions=SONIC_ACTIONS):
     if not actions:
         raise ValueError("At least one action is required")
