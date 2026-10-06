@@ -57,6 +57,14 @@ RUN_RIGHT_ALT_FRAMES = (
     FrameRect(334, 80, 32, 36),
     FrameRect(370, 79, 29, 38),
 )
+JUMP_FRAMES = (
+    FrameRect(1, 124, 33, 40),
+    FrameRect(39, 124, 35, 39),
+    FrameRect(89, 125, 35, 38),
+    FrameRect(130, 121, 34, 42),
+    FrameRect(181, 122, 34, 41),
+    FrameRect(228, 122, 33, 40),
+)
 
 
 def main():
