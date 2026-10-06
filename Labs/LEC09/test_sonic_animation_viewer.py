@@ -100,6 +100,11 @@ class ViewerSetupTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             viewer.validate_actions((invalid_action,))
 
+    def test_display_size_is_three_times_each_frame(self):
+        frame = viewer.FrameRect(1, 39, 29, 39)
+
+        self.assertEqual(viewer.get_display_size(frame), (87, 117))
+
     def test_main_opens_and_closes_canvas(self):
         with (
             patch.object(viewer, "open_canvas") as open_canvas,

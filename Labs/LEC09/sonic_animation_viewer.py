@@ -139,6 +139,10 @@ def validate_actions(actions=SONIC_ACTIONS):
     return actions
 
 
+def get_display_size(frame):
+    return frame.width * 3, frame.height * 3
+
+
 def main():
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     try:
