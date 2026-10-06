@@ -44,6 +44,11 @@ class ViewerSetupTests(unittest.TestCase):
         self.assertEqual(viewer.JUMP_FRAMES[3].height, 42)
         self.assertEqual(viewer.JUMP_FRAMES[-1].x, 228)
 
+    def test_fourth_action_has_nine_variable_size_frames(self):
+        self.assertEqual(len(viewer.ACTION_4_FRAMES), 9)
+        self.assertEqual(viewer.ACTION_4_FRAMES[1].height, 31)
+        self.assertEqual(viewer.ACTION_4_FRAMES[-1].x, 268)
+
     def test_main_opens_and_closes_canvas(self):
         with (
             patch.object(viewer, "open_canvas") as open_canvas,

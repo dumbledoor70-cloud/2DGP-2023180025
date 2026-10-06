@@ -65,6 +65,17 @@ JUMP_FRAMES = (
     FrameRect(181, 122, 34, 41),
     FrameRect(228, 122, 33, 40),
 )
+ACTION_4_FRAMES = (
+    FrameRect(1, 169, 29, 30),
+    FrameRect(35, 167, 29, 31),
+    FrameRect(67, 169, 30, 29),
+    FrameRect(98, 169, 31, 29),
+    FrameRect(131, 168, 29, 30),
+    FrameRect(162, 168, 29, 31),
+    FrameRect(193, 170, 30, 29),
+    FrameRect(230, 170, 31, 29),
+    FrameRect(268, 170, 30, 30),
+)
 
 
 def main():
