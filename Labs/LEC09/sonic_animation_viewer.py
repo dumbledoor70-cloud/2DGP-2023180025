@@ -84,6 +84,14 @@ ACTION_5_FRAMES = (
     FrameRect(139, 206, 29, 27),
     FrameRect(174, 206, 29, 27),
 )
+ACTION_6_FRAMES = (
+    FrameRect(1, 239, 29, 35),
+    FrameRect(36, 239, 30, 35),
+    FrameRect(74, 239, 31, 35),
+    FrameRect(111, 238, 31, 36),
+    FrameRect(149, 239, 30, 35),
+    FrameRect(186, 238, 31, 36),
+)
 
 
 def main():
