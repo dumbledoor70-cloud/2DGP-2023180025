@@ -96,6 +96,17 @@ class ViewerSetupTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             viewer.update_position(state, -0.1)
 
+    def test_position_stays_fixed_during_action_pause(self):
+        action = viewer.AnimationAction(
+            "moving",
+            (viewer.FrameRect(0, 0, 20, 20),),
+            direction_x=1,
+        )
+        state = viewer.AnimationState((action,))
+        state.phase = viewer.PAUSING
+
+        self.assertEqual(viewer.update_position(state, 1.0), (600, 300))
+
     def test_clamp_stops_position_at_scaled_canvas_edges(self):
         actions = (
             viewer.AnimationAction(
@@ -164,6 +175,10 @@ class ViewerSetupTests(unittest.TestCase):
         self.assertEqual(
             [(action.direction_x, action.direction_y) for action in viewer.SONIC_ACTIONS[:2]],
             [(1, 0), (1, 0)],
+        )
+        self.assertEqual(
+            [(action.direction_x, action.direction_y) for action in viewer.SONIC_ACTIONS],
+            [(1, 0)] * 7 + [(0, 0)],
         )
         self.assertEqual([action.name for action in viewer.SONIC_ACTIONS], [
             "동작 1", "동작 2", "동작 3", "동작 4",

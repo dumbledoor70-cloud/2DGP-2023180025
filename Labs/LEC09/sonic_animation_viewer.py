@@ -132,11 +132,11 @@ ACTION_8_FRAMES = (
 SONIC_ACTIONS = (
     AnimationAction("동작 1", RUN_RIGHT_FRAMES, direction_x=1),
     AnimationAction("동작 2", RUN_RIGHT_ALT_FRAMES, direction_x=1),
-    AnimationAction("동작 3", JUMP_FRAMES),
-    AnimationAction("동작 4", ACTION_4_FRAMES),
-    AnimationAction("동작 5", ACTION_5_FRAMES),
-    AnimationAction("동작 6", ACTION_6_FRAMES),
-    AnimationAction("동작 7", ACTION_7_FRAMES),
+    AnimationAction("동작 3", JUMP_FRAMES, direction_x=1),
+    AnimationAction("동작 4", ACTION_4_FRAMES, direction_x=1),
+    AnimationAction("동작 5", ACTION_5_FRAMES, direction_x=1),
+    AnimationAction("동작 6", ACTION_6_FRAMES, direction_x=1),
+    AnimationAction("동작 7", ACTION_7_FRAMES, direction_x=1),
     AnimationAction("동작 8", ACTION_8_FRAMES),
 )
 
@@ -192,6 +192,8 @@ def update_animation(state, now):
 def update_position(state, elapsed_seconds):
     if elapsed_seconds < 0:
         raise ValueError("Elapsed time cannot be negative")
+    if state.phase != PLAYING:
+        return state.x, state.y
     action = state.actions[state.action_index]
     state.x += action.direction_x * MOVEMENT_SPEED * elapsed_seconds
     state.y += action.direction_y * MOVEMENT_SPEED * elapsed_seconds
