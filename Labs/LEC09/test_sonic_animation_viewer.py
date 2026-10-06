@@ -123,6 +123,14 @@ class ViewerSetupTests(unittest.TestCase):
 
         self.assertEqual(sprite_sheet.calls, [(1, 447, 29, 39, 600, 300, 87, 117)])
 
+    def test_sprite_loader_uses_prd_asset_path(self):
+        image = object()
+        with patch.object(viewer, "load_image", return_value=image) as load_image:
+            result = viewer.load_sprite_sheet()
+
+        self.assertIs(result, image)
+        load_image.assert_called_once_with("sonic-sprite.png")
+
     def test_main_opens_and_closes_canvas(self):
         with (
             patch.object(viewer, "open_canvas") as open_canvas,

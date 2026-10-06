@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import NamedTuple
 
-from pico2d import clear_canvas, close_canvas, open_canvas, update_canvas
+from pico2d import clear_canvas, close_canvas, load_image, open_canvas, update_canvas
 
 
 CANVAS_WIDTH = 1200
@@ -157,6 +157,10 @@ def draw_frame(sprite_sheet, frame, center_x=CENTER_X, center_y=CENTER_Y):
         display_height,
     )
     update_canvas()
+
+
+def load_sprite_sheet(path=SPRITE_SHEET_PATH):
+    return load_image(path)
 
 
 def main():
