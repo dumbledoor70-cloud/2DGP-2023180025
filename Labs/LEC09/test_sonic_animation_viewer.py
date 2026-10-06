@@ -143,6 +143,18 @@ class ViewerSetupTests(unittest.TestCase):
         self.assertTrue(viewer.reset_position_at_edge(state))
         self.assertEqual((state.x, state.y), (600, 300))
 
+    def test_vertical_edge_resets_to_center_for_vertical_movement(self):
+        action = viewer.AnimationAction(
+            "up",
+            (viewer.FrameRect(0, 0, 20, 30),),
+            direction_y=1,
+        )
+        state = viewer.AnimationState((action,))
+        state.y = 580
+
+        self.assertTrue(viewer.reset_position_at_edge(state))
+        self.assertEqual((state.x, state.y), (600, 300))
+
     def test_first_run_action_has_eleven_explicit_frames(self):
         self.assertEqual(len(viewer.RUN_RIGHT_FRAMES), 11)
         self.assertEqual(viewer.RUN_RIGHT_FRAMES[0], viewer.FrameRect(1, 39, 29, 39))
@@ -343,6 +355,94 @@ class ViewerSetupTests(unittest.TestCase):
 
         self.assertEqual(draw_positions, [(600.0, 300.0), (630.0, 300.0)])
         self.assertIs(states[0], states[1])
+        close_canvas.assert_called_once_with()
+
+    def test_main_mirrors_left_motion_and_recenters_at_edge(self):
+        action = viewer.AnimationAction(
+            "left",
+            (viewer.FrameRect(0, 0, 40, 30),),
+            direction_x=-1,
+        )
+        quit_event = [SimpleNamespace(type=viewer.SDL_QUIT)]
+        events = iter([[] for _ in range(6)] + [quit_event])
+        clock = iter(range(6))
+        draw_calls = []
+
+        def draw(_sheet, _frame, center_x, center_y, flip_horizontal=False):
+            draw_calls.append((center_x, center_y, flip_horizontal))
+
+        with (
+            patch.object(viewer, "open_canvas"),
+            patch.object(viewer, "load_sprite_sheet", return_value=object()),
+            patch.object(viewer, "get_events", side_effect=lambda: next(events)),
+            patch.object(viewer, "monotonic", side_effect=lambda: next(clock)),
+            patch.object(viewer, "update_animation", return_value=(action, action.frames[0])),
+            patch.object(viewer, "draw_frame", side_effect=draw),
+            patch.object(viewer, "delay"),
+            patch.object(viewer, "close_canvas") as close_canvas,
+        ):
+            viewer.main((action,))
+
+        self.assertEqual(
+            draw_calls,
+            [
+                (600.0, 300.0, True),
+                (480.0, 300.0, True),
+                (360.0, 300.0, True),
+                (240.0, 300.0, True),
+                (120.0, 300.0, True),
+                (600.0, 300.0, True),
+            ],
+        )
+        close_canvas.assert_called_once_with()
+
+    def test_default_action_list_runs_all_380_frames_before_wrapping(self):
+        clock = iter(index * 0.11 for index in range(1000))
+        wraps = [0]
+        rendered_frames = []
+        original_update = viewer.update_animation
+
+        def update_and_record(state, now):
+            previous_phase = state.phase
+            previous_action = state.action_index
+            result = original_update(state, now)
+            if result is not None:
+                rendered_frames.append(result)
+            if (
+                previous_phase == viewer.PAUSING
+                and state.phase == viewer.PLAYING
+                and previous_action == len(state.actions) - 1
+                and state.action_index == 0
+            ):
+                wraps[0] += 1
+            return result
+
+        def events_for_one_cycle():
+            if wraps[0]:
+                return [SimpleNamespace(type=viewer.SDL_QUIT)]
+            return []
+
+        with (
+            patch.object(viewer, "open_canvas"),
+            patch.object(viewer, "load_sprite_sheet", return_value=object()),
+            patch.object(viewer, "get_events", side_effect=events_for_one_cycle),
+            patch.object(viewer, "monotonic", side_effect=lambda: next(clock)),
+            patch.object(viewer, "update_animation", side_effect=update_and_record),
+            patch.object(viewer, "draw_frame"),
+            patch.object(viewer, "delay"),
+            patch.object(viewer, "close_canvas") as close_canvas,
+        ):
+            viewer.main()
+
+        expected_frames = [
+            (action, frame)
+            for action in viewer.SONIC_ACTIONS
+            for _ in range(viewer.ACTION_REPEAT_COUNT)
+            for frame in action.frames
+        ]
+        self.assertEqual(rendered_frames, expected_frames)
+        self.assertEqual(len(rendered_frames), 380)
+        self.assertEqual(wraps[0], 1)
         close_canvas.assert_called_once_with()
 
 

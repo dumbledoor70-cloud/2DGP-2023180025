@@ -226,7 +226,6 @@ def reset_position_at_edge(state, canvas_width=CANVAS_WIDTH, canvas_height=CANVA
     half_height = max_height / 2
     if half_width * 2 > canvas_width or half_height * 2 > canvas_height:
         raise ValueError("Scaled Sonic frame is larger than the canvas")
-    action = state.actions[state.action_index]
     touched_horizontal_edge = (
         action.direction_x > 0 and state.x + half_width >= canvas_width
     ) or (action.direction_x < 0 and state.x - half_width <= 0)
