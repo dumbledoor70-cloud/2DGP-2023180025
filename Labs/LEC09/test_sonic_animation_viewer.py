@@ -42,6 +42,46 @@ class ViewerSetupTests(unittest.TestCase):
         self.assertEqual(viewer.advance_frame_index(4, 6), (5, False))
         self.assertEqual(viewer.advance_frame_index(5, 6), (0, True))
 
+    def test_update_repeats_variable_length_action_five_times_then_pauses(self):
+        actions = (
+            viewer.AnimationAction(
+                "two frames",
+                (viewer.FrameRect(0, 0, 20, 20), viewer.FrameRect(20, 0, 25, 18)),
+            ),
+            viewer.AnimationAction(
+                "three frames",
+                (
+                    viewer.FrameRect(0, 20, 15, 15),
+                    viewer.FrameRect(15, 20, 18, 15),
+                    viewer.FrameRect(33, 20, 20, 15),
+                ),
+            ),
+        )
+        state = viewer.AnimationState(actions)
+
+        for frame_number in range(10):
+            action, frame = viewer.update_animation(state, frame_number * 0.11)
+            self.assertEqual(action.name, "two frames")
+            self.assertEqual(frame, actions[0].frames[frame_number % 2])
+
+        self.assertEqual(state.completed_repeats, 5)
+        self.assertEqual(state.phase, viewer.PAUSING)
+        self.assertIsNone(viewer.update_animation(state, state.pause_until - 0.001))
+        self.assertEqual(state.action_index, 0)
+        self.assertIsNone(viewer.update_animation(state, state.pause_until))
+        self.assertEqual(state.action_index, 1)
+        self.assertEqual(state.frame_index, 0)
+        self.assertEqual(state.phase, viewer.PLAYING)
+
+        for frame_number in range(15):
+            action, frame = viewer.update_animation(state, state.next_frame_time)
+            self.assertEqual(action.name, "three frames")
+            self.assertEqual(frame, actions[1].frames[frame_number % 3])
+            state.next_frame_time += 0.11
+
+        self.assertEqual(state.completed_repeats, 5)
+        self.assertEqual(state.phase, viewer.PAUSING)
+
     def test_first_run_action_has_eleven_explicit_frames(self):
         self.assertEqual(len(viewer.RUN_RIGHT_FRAMES), 11)
         self.assertEqual(viewer.RUN_RIGHT_FRAMES[0], viewer.FrameRect(1, 39, 29, 39))

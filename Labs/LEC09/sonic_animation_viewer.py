@@ -148,6 +148,35 @@ def advance_frame_index(frame_index, frame_count):
     return next_index, next_index == 0
 
 
+def update_animation(state, now):
+    if state.phase == PLAYING:
+        if now < state.next_frame_time:
+            return None
+
+        action = state.actions[state.action_index]
+        frame = action.frames[state.frame_index]
+        state.frame_index, completed_cycle = advance_frame_index(
+            state.frame_index,
+            len(action.frames),
+        )
+        if completed_cycle:
+            state.completed_repeats += 1
+        if state.completed_repeats == ACTION_REPEAT_COUNT:
+            state.phase = PAUSING
+            state.pause_until = now + ACTION_PAUSE_SECONDS
+        else:
+            state.next_frame_time = now + FRAME_INTERVAL_SECONDS
+        return action, frame
+
+    if state.phase == PAUSING and now >= state.pause_until:
+        state.action_index = (state.action_index + 1) % len(state.actions)
+        state.frame_index = 0
+        state.completed_repeats = 0
+        state.phase = PLAYING
+        state.next_frame_time = now
+    return None
+
+
 def validate_actions(actions=SONIC_ACTIONS):
     if not actions:
         raise ValueError("At least one action is required")
