@@ -30,6 +30,21 @@ class AnimationAction:
     direction_y: int = 0
 
 
+RUN_RIGHT_FRAMES = (
+    FrameRect(1, 39, 29, 39),
+    FrameRect(31, 40, 26, 38),
+    FrameRect(58, 39, 28, 39),
+    FrameRect(86, 40, 30, 38),
+    FrameRect(118, 40, 30, 38),
+    FrameRect(150, 40, 30, 38),
+    FrameRect(182, 40, 29, 38),
+    FrameRect(211, 39, 29, 38),
+    FrameRect(240, 39, 29, 38),
+    FrameRect(270, 45, 24, 32),
+    FrameRect(302, 51, 29, 26),
+)
+
+
 def main():
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
     try:
