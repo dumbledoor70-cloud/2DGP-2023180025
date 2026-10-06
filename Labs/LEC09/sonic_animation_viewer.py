@@ -43,6 +43,20 @@ RUN_RIGHT_FRAMES = (
     FrameRect(270, 45, 24, 32),
     FrameRect(302, 51, 29, 26),
 )
+RUN_RIGHT_ALT_FRAMES = (
+    FrameRect(8, 80, 26, 37),
+    FrameRect(37, 80, 27, 37),
+    FrameRect(65, 80, 31, 38),
+    FrameRect(97, 80, 37, 37),
+    FrameRect(135, 80, 32, 35),
+    FrameRect(170, 79, 32, 38),
+    FrameRect(206, 79, 26, 38),
+    FrameRect(238, 80, 24, 37),
+    FrameRect(263, 80, 30, 37),
+    FrameRect(295, 80, 36, 37),
+    FrameRect(334, 80, 32, 36),
+    FrameRect(370, 79, 29, 38),
+)
 
 
 def main():
