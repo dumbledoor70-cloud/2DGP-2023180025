@@ -69,6 +69,20 @@ class ViewerSetupTests(unittest.TestCase):
         self.assertEqual(viewer.ACTION_8_FRAMES[0].height, 45)
         self.assertEqual(viewer.ACTION_8_FRAMES[-1].x, 232)
 
+    def test_action_catalog_preserves_sheet_order_and_frame_counts(self):
+        self.assertEqual(
+            [len(action.frames) for action in viewer.SONIC_ACTIONS],
+            [11, 12, 6, 9, 6, 6, 6, 8],
+        )
+        self.assertEqual(
+            [(action.direction_x, action.direction_y) for action in viewer.SONIC_ACTIONS[:2]],
+            [(1, 0), (1, 0)],
+        )
+        self.assertEqual([action.name for action in viewer.SONIC_ACTIONS], [
+            "동작 1", "동작 2", "동작 3", "동작 4",
+            "동작 5", "동작 6", "동작 7", "동작 8",
+        ])
+
     def test_main_opens_and_closes_canvas(self):
         with (
             patch.object(viewer, "open_canvas") as open_canvas,
