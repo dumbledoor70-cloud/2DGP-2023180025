@@ -107,7 +107,7 @@ class ViewerSetupTests(unittest.TestCase):
 
         self.assertEqual(viewer.update_position(state, 1.0), (600, 300))
 
-    def test_clamp_stops_position_at_scaled_canvas_edges(self):
+    def test_edge_contact_resets_center_without_resetting_animation_state(self):
         actions = (
             viewer.AnimationAction(
                 "large run",
@@ -119,13 +119,29 @@ class ViewerSetupTests(unittest.TestCase):
         state = viewer.AnimationState(actions)
         state.x = 1190
         state.y = 5
+        state.frame_index = 2
+        state.completed_repeats = 3
 
-        self.assertEqual(viewer.clamp_position(state), (1140.0, 45.0))
-        self.assertEqual(state.frame_index, 0)
-        self.assertEqual(state.completed_repeats, 0)
+        self.assertTrue(viewer.reset_position_at_edge(state))
+        self.assertEqual((state.x, state.y), (600, 300))
+        self.assertEqual(state.frame_index, 2)
+        self.assertEqual(state.completed_repeats, 3)
 
         viewer.update_position(state, 1.0)
-        self.assertEqual(viewer.clamp_position(state), (1140.0, 45.0))
+        self.assertEqual((state.x, state.y), (720.0, 180.0))
+        self.assertFalse(viewer.reset_position_at_edge(state))
+
+    def test_left_edge_resets_to_center_for_leftward_movement(self):
+        action = viewer.AnimationAction(
+            "left",
+            (viewer.FrameRect(0, 0, 40, 30),),
+            direction_x=-1,
+        )
+        state = viewer.AnimationState((action,))
+        state.x = 10
+
+        self.assertTrue(viewer.reset_position_at_edge(state))
+        self.assertEqual((state.x, state.y), (600, 300))
 
     def test_first_run_action_has_eleven_explicit_frames(self):
         self.assertEqual(len(viewer.RUN_RIGHT_FRAMES), 11)

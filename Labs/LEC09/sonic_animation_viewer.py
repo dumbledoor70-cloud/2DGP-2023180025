@@ -218,7 +218,7 @@ def update_position(state, elapsed_seconds):
     return state.x, state.y
 
 
-def clamp_position(state, canvas_width=CANVAS_WIDTH, canvas_height=CANVAS_HEIGHT):
+def reset_position_at_edge(state, canvas_width=CANVAS_WIDTH, canvas_height=CANVAS_HEIGHT):
     action = state.actions[state.action_index]
     max_width = max(get_display_size(frame)[0] for frame in action.frames)
     max_height = max(get_display_size(frame)[1] for frame in action.frames)
@@ -226,9 +226,18 @@ def clamp_position(state, canvas_width=CANVAS_WIDTH, canvas_height=CANVAS_HEIGHT
     half_height = max_height / 2
     if half_width * 2 > canvas_width or half_height * 2 > canvas_height:
         raise ValueError("Scaled Sonic frame is larger than the canvas")
-    state.x = min(max(state.x, half_width), canvas_width - half_width)
-    state.y = min(max(state.y, half_height), canvas_height - half_height)
-    return state.x, state.y
+    action = state.actions[state.action_index]
+    touched_horizontal_edge = (
+        action.direction_x > 0 and state.x + half_width >= canvas_width
+    ) or (action.direction_x < 0 and state.x - half_width <= 0)
+    touched_vertical_edge = (
+        action.direction_y > 0 and state.y + half_height >= canvas_height
+    ) or (action.direction_y < 0 and state.y - half_height <= 0)
+    if touched_horizontal_edge or touched_vertical_edge:
+        state.x = CENTER_X
+        state.y = CENTER_Y
+        return True
+    return False
 
 
 def validate_actions(actions=SONIC_ACTIONS):
@@ -316,7 +325,7 @@ def main(actions=SONIC_ACTIONS):
             else:
                 current_action = state.actions[state.action_index]
             update_position(state, elapsed)
-            clamp_position(state)
+            reset_position_at_edge(state)
             draw_frame(
                 sprite_sheet,
                 current_frame,
