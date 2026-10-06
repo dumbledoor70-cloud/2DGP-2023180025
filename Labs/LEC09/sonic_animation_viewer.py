@@ -15,6 +15,8 @@ FRAME_INTERVAL_SECONDS = 0.1
 ACTION_REPEAT_COUNT = 5
 ACTION_PAUSE_SECONDS = 0.5
 MOVEMENT_SPEED = 120.0
+PLAYING = "playing"
+PAUSING = "pausing"
 
 
 class FrameRect(NamedTuple):
@@ -125,6 +127,25 @@ SONIC_ACTIONS = (
     AnimationAction("동작 7", ACTION_7_FRAMES),
     AnimationAction("동작 8", ACTION_8_FRAMES),
 )
+
+
+class AnimationState:
+    def __init__(self, actions=SONIC_ACTIONS):
+        validate_actions(actions)
+        self.actions = actions
+        self.action_index = 0
+        self.frame_index = 0
+        self.completed_repeats = 0
+        self.phase = PLAYING
+        self.x = CENTER_X
+        self.y = CENTER_Y
+        self.next_frame_time = 0.0
+        self.pause_until = 0.0
+
+
+def advance_frame_index(frame_index, frame_count):
+    next_index = (frame_index + 1) % frame_count
+    return next_index, next_index == 0
 
 
 def validate_actions(actions=SONIC_ACTIONS):

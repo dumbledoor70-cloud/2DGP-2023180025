@@ -29,6 +29,19 @@ class ViewerSetupTests(unittest.TestCase):
         self.assertEqual(len(action.frames), 2)
         self.assertEqual((action.direction_x, action.direction_y), (1, 0))
 
+    def test_animation_state_starts_at_first_frame_and_center(self):
+        state = viewer.AnimationState()
+
+        self.assertEqual((state.action_index, state.frame_index), (0, 0))
+        self.assertEqual((state.x, state.y), (600, 300))
+        self.assertEqual(state.phase, viewer.PLAYING)
+
+    def test_frame_index_wrap_uses_each_action_frame_count(self):
+        self.assertEqual(viewer.advance_frame_index(0, 2), (1, False))
+        self.assertEqual(viewer.advance_frame_index(1, 2), (0, True))
+        self.assertEqual(viewer.advance_frame_index(4, 6), (5, False))
+        self.assertEqual(viewer.advance_frame_index(5, 6), (0, True))
+
     def test_first_run_action_has_eleven_explicit_frames(self):
         self.assertEqual(len(viewer.RUN_RIGHT_FRAMES), 11)
         self.assertEqual(viewer.RUN_RIGHT_FRAMES[0], viewer.FrameRect(1, 39, 29, 39))
