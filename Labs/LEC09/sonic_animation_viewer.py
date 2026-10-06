@@ -177,6 +177,15 @@ def update_animation(state, now):
     return None
 
 
+def update_position(state, elapsed_seconds):
+    if elapsed_seconds < 0:
+        raise ValueError("Elapsed time cannot be negative")
+    action = state.actions[state.action_index]
+    state.x += action.direction_x * MOVEMENT_SPEED * elapsed_seconds
+    state.y += action.direction_y * MOVEMENT_SPEED * elapsed_seconds
+    return state.x, state.y
+
+
 def validate_actions(actions=SONIC_ACTIONS):
     if not actions:
         raise ValueError("At least one action is required")

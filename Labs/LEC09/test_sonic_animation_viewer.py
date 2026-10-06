@@ -82,6 +82,19 @@ class ViewerSetupTests(unittest.TestCase):
         self.assertEqual(state.completed_repeats, 5)
         self.assertEqual(state.phase, viewer.PAUSING)
 
+    def test_position_moves_by_action_direction_and_elapsed_time(self):
+        actions = (
+            viewer.AnimationAction("right", (viewer.FrameRect(0, 0, 20, 20),), 1, 0),
+            viewer.AnimationAction("up", (viewer.FrameRect(20, 0, 20, 20),), 0, 1),
+        )
+        state = viewer.AnimationState(actions)
+
+        self.assertEqual(viewer.update_position(state, 0.25), (630.0, 300.0))
+        state.action_index = 1
+        self.assertEqual(viewer.update_position(state, 0.5), (630.0, 360.0))
+        with self.assertRaises(ValueError):
+            viewer.update_position(state, -0.1)
+
     def test_first_run_action_has_eleven_explicit_frames(self):
         self.assertEqual(len(viewer.RUN_RIGHT_FRAMES), 11)
         self.assertEqual(viewer.RUN_RIGHT_FRAMES[0], viewer.FrameRect(1, 39, 29, 39))
