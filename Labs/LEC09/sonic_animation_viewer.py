@@ -6,6 +6,9 @@ from pico2d import close_canvas, open_canvas
 
 CANVAS_WIDTH = 1200
 CANVAS_HEIGHT = 600
+SPRITE_SHEET_PATH = "sonic-sprite.png"
+SHEET_WIDTH = 399
+SHEET_HEIGHT = 525
 FRAME_INTERVAL_SECONDS = 0.1
 ACTION_REPEAT_COUNT = 5
 ACTION_PAUSE_SECONDS = 0.5
@@ -120,6 +123,20 @@ SONIC_ACTIONS = (
     AnimationAction("동작 7", ACTION_7_FRAMES),
     AnimationAction("동작 8", ACTION_8_FRAMES),
 )
+
+
+def validate_actions(actions=SONIC_ACTIONS):
+    if not actions:
+        raise ValueError("At least one action is required")
+    for action in actions:
+        if not action.frames:
+            raise ValueError(f"Action {action.name} must contain frames")
+        for frame in action.frames:
+            if frame.x < 0 or frame.y < 0 or frame.width <= 0 or frame.height <= 0:
+                raise ValueError(f"Invalid frame rectangle in {action.name}")
+            if frame.x + frame.width > SHEET_WIDTH or frame.y + frame.height > SHEET_HEIGHT:
+                raise ValueError(f"Frame rectangle outside sprite sheet in {action.name}")
+    return actions
 
 
 def main():

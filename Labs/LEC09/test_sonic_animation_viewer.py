@@ -83,6 +83,23 @@ class ViewerSetupTests(unittest.TestCase):
             "동작 5", "동작 6", "동작 7", "동작 8",
         ])
 
+    def test_all_action_rectangles_fit_the_sonic_sheet(self):
+        self.assertIs(viewer.validate_actions(), viewer.SONIC_ACTIONS)
+        for action in viewer.SONIC_ACTIONS:
+            for frame in action.frames:
+                self.assertGreater(frame.width, 0)
+                self.assertGreater(frame.height, 0)
+                self.assertLessEqual(frame.x + frame.width, 399)
+                self.assertLessEqual(frame.y + frame.height, 525)
+
+    def test_action_validation_rejects_out_of_bounds_rectangles(self):
+        invalid_action = viewer.AnimationAction(
+            "bad",
+            (viewer.FrameRect(398, 0, 2, 10),),
+        )
+        with self.assertRaises(ValueError):
+            viewer.validate_actions((invalid_action,))
+
     def test_main_opens_and_closes_canvas(self):
         with (
             patch.object(viewer, "open_canvas") as open_canvas,
