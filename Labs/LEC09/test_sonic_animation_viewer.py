@@ -172,10 +172,15 @@ class ViewerSetupTests(unittest.TestCase):
         self.assertEqual(viewer.ACTION_9_FRAMES[0], viewer.FrameRect(1, 379, 27, 38))
         self.assertEqual(viewer.ACTION_9_FRAMES[-1].x, 254)
 
+    def test_tenth_action_uses_previously_unused_four_frame_strip(self):
+        self.assertEqual(len(viewer.ACTION_10_FRAMES), 4)
+        self.assertEqual(viewer.ACTION_10_FRAMES[0], viewer.FrameRect(6, 429, 34, 40))
+        self.assertEqual(viewer.ACTION_10_FRAMES[-1].x, 125)
+
     def test_action_catalog_preserves_sheet_order_and_frame_counts(self):
         self.assertEqual(
             [len(action.frames) for action in viewer.SONIC_ACTIONS],
-            [11, 12, 6, 9, 6, 6, 6, 8, 8],
+            [11, 12, 6, 9, 6, 6, 6, 8, 8, 4],
         )
         self.assertEqual(
             [(action.direction_x, action.direction_y) for action in viewer.SONIC_ACTIONS[:2]],
@@ -183,11 +188,11 @@ class ViewerSetupTests(unittest.TestCase):
         )
         self.assertEqual(
             [(action.direction_x, action.direction_y) for action in viewer.SONIC_ACTIONS],
-            [(1, 0)] * 7 + [(0, 0), (1, 0)],
+            [(1, 0)] * 7 + [(0, 0), (1, 0), (0, 0)],
         )
         self.assertEqual([action.name for action in viewer.SONIC_ACTIONS], [
             "동작 1", "동작 2", "동작 3", "동작 4",
-            "동작 5", "동작 6", "동작 7", "동작 8", "동작 9",
+            "동작 5", "동작 6", "동작 7", "동작 8", "동작 9", "동작 10",
         ])
 
     def test_all_action_rectangles_fit_the_sonic_sheet(self):
