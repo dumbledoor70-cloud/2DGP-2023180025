@@ -129,6 +129,16 @@ ACTION_8_FRAMES = (
     FrameRect(184, 341, 40, 28),
     FrameRect(232, 341, 39, 27),
 )
+ACTION_9_FRAMES = (
+    FrameRect(1, 379, 27, 38),
+    FrameRect(31, 379, 31, 36),
+    FrameRect(64, 379, 31, 36),
+    FrameRect(99, 377, 33, 38),
+    FrameRect(136, 379, 32, 36),
+    FrameRect(176, 379, 33, 36),
+    FrameRect(217, 379, 33, 36),
+    FrameRect(254, 378, 33, 36),
+)
 SONIC_ACTIONS = (
     AnimationAction("동작 1", RUN_RIGHT_FRAMES, direction_x=1),
     AnimationAction("동작 2", RUN_RIGHT_ALT_FRAMES, direction_x=1),
@@ -138,6 +148,7 @@ SONIC_ACTIONS = (
     AnimationAction("동작 6", ACTION_6_FRAMES, direction_x=1),
     AnimationAction("동작 7", ACTION_7_FRAMES, direction_x=1),
     AnimationAction("동작 8", ACTION_8_FRAMES),
+    AnimationAction("동작 9", ACTION_9_FRAMES, direction_x=1),
 )
 
 
