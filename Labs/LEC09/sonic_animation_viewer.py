@@ -1,7 +1,19 @@
 from dataclasses import dataclass
+from time import monotonic
 from typing import NamedTuple
 
-from pico2d import clear_canvas, close_canvas, load_image, open_canvas, update_canvas
+from pico2d import (
+    SDL_KEYDOWN,
+    SDL_QUIT,
+    SDLK_ESCAPE,
+    clear_canvas,
+    close_canvas,
+    delay,
+    get_events,
+    load_image,
+    open_canvas,
+    update_canvas,
+)
 
 
 CANVAS_WIDTH = 1200
@@ -235,11 +247,40 @@ def load_sprite_sheet(path=SPRITE_SHEET_PATH):
     return load_image(path)
 
 
-def main():
+def should_quit(events):
+    for event in events:
+        if event.type == SDL_QUIT:
+            return True
+        if event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
+            return True
+    return False
+
+
+def main(actions=SONIC_ACTIONS):
+    validate_actions(actions)
     open_canvas(CANVAS_WIDTH, CANVAS_HEIGHT)
+    sprite_sheet = None
     try:
-        pass
+        sprite_sheet = load_sprite_sheet()
+        state = AnimationState(actions)
+        current_frame = actions[0].frames[0]
+        previous_time = None
+        while True:
+            if should_quit(get_events()):
+                break
+
+            now = monotonic()
+            elapsed = 0.0 if previous_time is None else max(0.0, now - previous_time)
+            previous_time = now
+            frame_to_draw = update_animation(state, now)
+            if frame_to_draw is not None:
+                _, current_frame = frame_to_draw
+            update_position(state, elapsed)
+            clamp_position(state)
+            draw_frame(sprite_sheet, current_frame, state.x, state.y)
+            delay(0.005)
     finally:
+        sprite_sheet = None
         close_canvas()
 
 

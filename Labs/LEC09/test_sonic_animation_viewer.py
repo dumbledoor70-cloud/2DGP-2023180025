@@ -1,4 +1,5 @@
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import sonic_animation_viewer as viewer
@@ -217,14 +218,69 @@ class ViewerSetupTests(unittest.TestCase):
         self.assertIs(result, image)
         load_image.assert_called_once_with("sonic-sprite.png")
 
+    def test_quit_detection_handles_window_and_escape_events(self):
+        self.assertTrue(viewer.should_quit([SimpleNamespace(type=viewer.SDL_QUIT)]))
+        self.assertTrue(
+            viewer.should_quit(
+                [SimpleNamespace(type=viewer.SDL_KEYDOWN, key=viewer.SDLK_ESCAPE)]
+            )
+        )
+        self.assertFalse(
+            viewer.should_quit(
+                [SimpleNamespace(type=viewer.SDL_KEYDOWN, key=0)]
+            )
+        )
+
     def test_main_opens_and_closes_canvas(self):
         with (
             patch.object(viewer, "open_canvas") as open_canvas,
+            patch.object(viewer, "load_sprite_sheet", return_value=object()),
+            patch.object(viewer, "get_events", return_value=[SimpleNamespace(type=viewer.SDL_QUIT)]),
             patch.object(viewer, "close_canvas") as close_canvas,
         ):
             viewer.main()
 
         open_canvas.assert_called_once_with(1200, 600)
+        close_canvas.assert_called_once_with()
+
+    def test_main_integrates_animation_movement_render_and_shutdown(self):
+        action = viewer.AnimationAction(
+            "right",
+            (viewer.FrameRect(0, 0, 20, 20),),
+            direction_x=1,
+        )
+        events = iter(
+            [
+                [],
+                [],
+                [SimpleNamespace(type=viewer.SDL_QUIT)],
+            ]
+        )
+        clock = iter([0.0, 0.25])
+        draw_positions = []
+        states = []
+
+        def update(state, _now):
+            states.append(state)
+            return action, action.frames[0]
+
+        def draw(_sheet, _frame, center_x, center_y):
+            draw_positions.append((center_x, center_y))
+
+        with (
+            patch.object(viewer, "open_canvas"),
+            patch.object(viewer, "load_sprite_sheet", return_value=object()),
+            patch.object(viewer, "get_events", side_effect=lambda: next(events)),
+            patch.object(viewer, "monotonic", side_effect=lambda: next(clock)),
+            patch.object(viewer, "update_animation", side_effect=update),
+            patch.object(viewer, "draw_frame", side_effect=draw),
+            patch.object(viewer, "delay"),
+            patch.object(viewer, "close_canvas") as close_canvas,
+        ):
+            viewer.main((action,))
+
+        self.assertEqual(draw_positions, [(600.0, 300.0), (630.0, 300.0)])
+        self.assertIs(states[0], states[1])
         close_canvas.assert_called_once_with()
 
 
