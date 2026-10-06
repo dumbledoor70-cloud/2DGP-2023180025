@@ -100,6 +100,16 @@ ACTION_7_FRAMES = (
     FrameRect(172, 286, 39, 31),
     FrameRect(218, 285, 38, 32),
 )
+ACTION_8_FRAMES = (
+    FrameRect(1, 326, 24, 45),
+    FrameRect(31, 327, 29, 44),
+    FrameRect(65, 327, 20, 44),
+    FrameRect(90, 327, 25, 43),
+    FrameRect(119, 327, 25, 43),
+    FrameRect(149, 327, 20, 44),
+    FrameRect(184, 341, 40, 28),
+    FrameRect(232, 341, 39, 27),
+)
 
 
 def main():
