@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 from typing import NamedTuple
 
-from pico2d import close_canvas, open_canvas
+from pico2d import clear_canvas, close_canvas, open_canvas, update_canvas
 
 
 CANVAS_WIDTH = 1200
 CANVAS_HEIGHT = 600
+CENTER_X = CANVAS_WIDTH // 2
+CENTER_Y = CANVAS_HEIGHT // 2
 SPRITE_SHEET_PATH = "sonic-sprite.png"
 SHEET_WIDTH = 399
 SHEET_HEIGHT = 525
@@ -141,6 +143,20 @@ def validate_actions(actions=SONIC_ACTIONS):
 
 def get_display_size(frame):
     return frame.width * 3, frame.height * 3
+
+
+def draw_frame(sprite_sheet, frame, center_x=CENTER_X, center_y=CENTER_Y):
+    source_rect = frame.to_pico2d(SHEET_HEIGHT)
+    display_width, display_height = get_display_size(frame)
+    clear_canvas()
+    sprite_sheet.clip_draw(
+        *source_rect,
+        center_x,
+        center_y,
+        display_width,
+        display_height,
+    )
+    update_canvas()
 
 
 def main():

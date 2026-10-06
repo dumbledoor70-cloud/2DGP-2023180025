@@ -105,6 +105,24 @@ class ViewerSetupTests(unittest.TestCase):
 
         self.assertEqual(viewer.get_display_size(frame), (87, 117))
 
+    def test_draw_frame_uses_crop_scale_and_canvas_center(self):
+        class FakeSpriteSheet:
+            def __init__(self):
+                self.calls = []
+
+            def clip_draw(self, *arguments):
+                self.calls.append(arguments)
+
+        sprite_sheet = FakeSpriteSheet()
+        frame = viewer.FrameRect(1, 39, 29, 39)
+        with (
+            patch.object(viewer, "clear_canvas"),
+            patch.object(viewer, "update_canvas"),
+        ):
+            viewer.draw_frame(sprite_sheet, frame)
+
+        self.assertEqual(sprite_sheet.calls, [(1, 447, 29, 39, 600, 300, 87, 117)])
+
     def test_main_opens_and_closes_canvas(self):
         with (
             patch.object(viewer, "open_canvas") as open_canvas,
