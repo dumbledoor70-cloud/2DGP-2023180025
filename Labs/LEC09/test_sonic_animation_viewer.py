@@ -14,6 +14,11 @@ class ViewerSetupTests(unittest.TestCase):
         self.assertEqual(viewer.ACTION_PAUSE_SECONDS, 0.5)
         self.assertEqual(viewer.MOVEMENT_SPEED, 120.0)
 
+    def test_frame_rect_converts_top_origin_to_pico2d_origin(self):
+        frame = viewer.FrameRect(10, 20, 30, 40)
+
+        self.assertEqual(frame.to_pico2d(525), (10, 465, 30, 40))
+
     def test_main_opens_and_closes_canvas(self):
         with (
             patch.object(viewer, "open_canvas") as open_canvas,
