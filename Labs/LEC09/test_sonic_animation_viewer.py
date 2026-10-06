@@ -8,6 +8,12 @@ class ViewerSetupTests(unittest.TestCase):
     def test_canvas_dimensions_match_prd(self):
         self.assertEqual((viewer.CANVAS_WIDTH, viewer.CANVAS_HEIGHT), (1200, 600))
 
+    def test_playback_settings_match_prd(self):
+        self.assertEqual(viewer.FRAME_INTERVAL_SECONDS, 0.1)
+        self.assertEqual(viewer.ACTION_REPEAT_COUNT, 5)
+        self.assertEqual(viewer.ACTION_PAUSE_SECONDS, 0.5)
+        self.assertEqual(viewer.MOVEMENT_SPEED, 120.0)
+
     def test_main_opens_and_closes_canvas(self):
         with (
             patch.object(viewer, "open_canvas") as open_canvas,
