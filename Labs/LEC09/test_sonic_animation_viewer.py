@@ -19,6 +19,16 @@ class ViewerSetupTests(unittest.TestCase):
 
         self.assertEqual(frame.to_pico2d(525), (10, 465, 30, 40))
 
+    def test_animation_action_stores_variable_frames_and_direction(self):
+        action = viewer.AnimationAction(
+            "run_right",
+            (viewer.FrameRect(0, 0, 30, 40), viewer.FrameRect(30, 2, 28, 38)),
+            direction_x=1,
+        )
+
+        self.assertEqual(len(action.frames), 2)
+        self.assertEqual((action.direction_x, action.direction_y), (1, 0))
+
     def test_main_opens_and_closes_canvas(self):
         with (
             patch.object(viewer, "open_canvas") as open_canvas,

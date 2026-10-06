@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import NamedTuple
 
 from pico2d import close_canvas, open_canvas
@@ -19,6 +20,14 @@ class FrameRect(NamedTuple):
 
     def to_pico2d(self, sheet_height):
         return self.x, sheet_height - self.y - self.height, self.width, self.height
+
+
+@dataclass(frozen=True)
+class AnimationAction:
+    name: str
+    frames: tuple[FrameRect, ...]
+    direction_x: int = 0
+    direction_y: int = 0
 
 
 def main():
