@@ -147,7 +147,7 @@ ACTION_10_FRAMES = (
 )
 SONIC_ACTIONS = (
     AnimationAction("동작 1", RUN_RIGHT_FRAMES, direction_x=1),
-    AnimationAction("동작 2", RUN_RIGHT_ALT_FRAMES, direction_x=1),
+    AnimationAction("동작 2", RUN_RIGHT_ALT_FRAMES, direction_x=-1),
     AnimationAction("동작 3", JUMP_FRAMES, direction_x=1),
     AnimationAction("동작 4", ACTION_4_FRAMES, direction_x=1),
     AnimationAction("동작 5", ACTION_5_FRAMES, direction_x=1),
@@ -249,17 +249,34 @@ def get_display_size(frame):
     return frame.width * 3, frame.height * 3
 
 
-def draw_frame(sprite_sheet, frame, center_x=CENTER_X, center_y=CENTER_Y):
+def draw_frame(
+    sprite_sheet,
+    frame,
+    center_x=CENTER_X,
+    center_y=CENTER_Y,
+    flip_horizontal=False,
+):
     source_rect = frame.to_pico2d(SHEET_HEIGHT)
     display_width, display_height = get_display_size(frame)
     clear_canvas()
-    sprite_sheet.clip_draw(
-        *source_rect,
-        center_x,
-        center_y,
-        display_width,
-        display_height,
-    )
+    if flip_horizontal:
+        sprite_sheet.clip_composite_draw(
+            *source_rect,
+            0.0,
+            "h",
+            center_x,
+            center_y,
+            display_width,
+            display_height,
+        )
+    else:
+        sprite_sheet.clip_draw(
+            *source_rect,
+            center_x,
+            center_y,
+            display_width,
+            display_height,
+        )
     update_canvas()
 
 
@@ -283,6 +300,7 @@ def main(actions=SONIC_ACTIONS):
     try:
         sprite_sheet = load_sprite_sheet()
         state = AnimationState(actions)
+        current_action = actions[0]
         current_frame = actions[0].frames[0]
         previous_time = None
         while True:
@@ -294,10 +312,18 @@ def main(actions=SONIC_ACTIONS):
             previous_time = now
             frame_to_draw = update_animation(state, now)
             if frame_to_draw is not None:
-                _, current_frame = frame_to_draw
+                current_action, current_frame = frame_to_draw
+            else:
+                current_action = state.actions[state.action_index]
             update_position(state, elapsed)
             clamp_position(state)
-            draw_frame(sprite_sheet, current_frame, state.x, state.y)
+            draw_frame(
+                sprite_sheet,
+                current_frame,
+                state.x,
+                state.y,
+                flip_horizontal=current_action.direction_x < 0,
+            )
             delay(0.005)
     finally:
         sprite_sheet = None

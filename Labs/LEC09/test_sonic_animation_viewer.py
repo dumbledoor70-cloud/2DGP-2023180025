@@ -184,11 +184,11 @@ class ViewerSetupTests(unittest.TestCase):
         )
         self.assertEqual(
             [(action.direction_x, action.direction_y) for action in viewer.SONIC_ACTIONS[:2]],
-            [(1, 0), (1, 0)],
+            [(1, 0), (-1, 0)],
         )
         self.assertEqual(
             [(action.direction_x, action.direction_y) for action in viewer.SONIC_ACTIONS],
-            [(1, 0)] * 7 + [(0, 0), (1, 0), (0, 0)],
+            [(1, 0), (-1, 0)] + [(1, 0)] * 5 + [(0, 0), (1, 0), (0, 0)],
         )
         self.assertEqual([action.name for action in viewer.SONIC_ACTIONS], [
             "동작 1", "동작 2", "동작 3", "동작 4",
@@ -234,6 +234,27 @@ class ViewerSetupTests(unittest.TestCase):
             viewer.draw_frame(sprite_sheet, frame)
 
         self.assertEqual(sprite_sheet.calls, [(1, 447, 29, 39, 600, 300, 87, 117)])
+
+    def test_left_moving_frame_uses_pico2d_horizontal_flip(self):
+        class FakeSpriteSheet:
+            def __init__(self):
+                self.calls = []
+
+            def clip_composite_draw(self, *arguments):
+                self.calls.append(arguments)
+
+        sprite_sheet = FakeSpriteSheet()
+        frame = viewer.FrameRect(1, 39, 29, 39)
+        with (
+            patch.object(viewer, "clear_canvas"),
+            patch.object(viewer, "update_canvas"),
+        ):
+            viewer.draw_frame(sprite_sheet, frame, flip_horizontal=True)
+
+        self.assertEqual(
+            sprite_sheet.calls,
+            [(1, 447, 29, 39, 0.0, "h", 600, 300, 87, 117)],
+        )
 
     def test_sprite_loader_uses_prd_asset_path(self):
         image = object()
@@ -289,7 +310,7 @@ class ViewerSetupTests(unittest.TestCase):
             states.append(state)
             return action, action.frames[0]
 
-        def draw(_sheet, _frame, center_x, center_y):
+        def draw(_sheet, _frame, center_x, center_y, flip_horizontal=False):
             draw_positions.append((center_x, center_y))
 
         with (
